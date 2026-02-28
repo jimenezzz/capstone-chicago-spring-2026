@@ -230,6 +230,54 @@ button:hover:not(:disabled) {
   margin-bottom: 0.55rem;
 }
 
+.filter-builder {
+  grid-column: 1 / -1;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.55rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.filter-builder-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-builder-head p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.btn-inline {
+  width: auto;
+  height: 32px;
+  padding: 0 0.75rem;
+  background: #334155;
+  color: #fff;
+  border-radius: 7px;
+  font-size: 0.76rem;
+}
+
+.btn-danger {
+  background: #ef4444;
+}
+
+.filter-count {
+  margin-top: 0.1rem;
+  font-size: 0.78rem;
+}
+
 .data-table-wrap h3 {
   margin: 0 0 0.55rem;
 }
@@ -432,5 +480,9 @@ button:hover:not(:disabled) {
 
   .sidebar {
     border-bottom: 1px solid #373a40;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
   }
 }
