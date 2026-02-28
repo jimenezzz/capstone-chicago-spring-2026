@@ -1,0 +1,802 @@
+[
+  {
+    "package_ndc": "75834-327-01",
+    "package_ndc11": "75834032701",
+    "product_ndc": "75834-327",
+    "application_number": "ANDA209211",
+    "generic_name": "Dexmethylphenidate hydrochloride",
+    "brand_name": "Dexmethylphenidate hydrochloride"
+  },
+  {
+    "package_ndc": "0527-6011-06",
+    "package_ndc11": "00527601106",
+    "product_ndc": "0527-6011",
+    "application_number": "ANDA214464",
+    "generic_name": "fluticasone propionate and salmeterol",
+    "brand_name": "Fluticasone Propionate and Salmeterol"
+  },
+  {
+    "package_ndc": "75854-701-01",
+    "package_ndc11": "75854070101",
+    "product_ndc": "75854-701",
+    "application_number": "NDA214869",
+    "generic_name": "Carbidopa Levodopa",
+    "brand_name": "Dhivy"
+  },
+  {
+    "package_ndc": "75907-022-01",
+    "package_ndc11": "75907002201",
+    "product_ndc": "75907-022",
+    "application_number": "ANDA073618",
+    "generic_name": "Carbidopa and Levodopa",
+    "brand_name": "Carbidopa and Levodopa"
+  },
+  {
+    "package_ndc": "75907-024-48",
+    "package_ndc11": "75907002448",
+    "product_ndc": "75907-024",
+    "application_number": "ANDA079090",
+    "generic_name": "CLONIDINE",
+    "brand_name": "Clonidine"
+  },
+  {
+    "package_ndc": "0527-8106-37",
+    "package_ndc11": "00527810637",
+    "product_ndc": "0527-8106",
+    "application_number": "ANDA210279",
+    "generic_name": "dexmethylphenidate hydrochloride",
+    "brand_name": "Dexmethylphenidate Hydrochloride Extended-Release"
+  },
+  {
+    "package_ndc": "75907-051-01",
+    "package_ndc11": "75907005101",
+    "product_ndc": "75907-051",
+    "application_number": "ANDA078458",
+    "generic_name": "Methylphenidate Hydrochloride",
+    "brand_name": "Methylphenidate Hydrochloride (LA)"
+  },
+  {
+    "package_ndc": "75907-069-01",
+    "package_ndc11": "75907006901",
+    "product_ndc": "75907-069",
+    "application_number": "ANDA073556",
+    "generic_name": "Nortriptyline Hydrochloride",
+    "brand_name": "Nortriptyline Hydrochloride"
+  },
+  {
+    "package_ndc": "75907-069-05",
+    "package_ndc11": "75907006905",
+    "product_ndc": "75907-069",
+    "application_number": "ANDA073556",
+    "generic_name": "Nortriptyline Hydrochloride",
+    "brand_name": "Nortriptyline Hydrochloride"
+  },
+  {
+    "package_ndc": "75907-075-32",
+    "package_ndc11": "75907007532",
+    "product_ndc": "75907-075",
+    "application_number": "ANDA076225",
+    "generic_name": "NORETHINDRONE",
+    "brand_name": "ERRIN"
+  },
+  {
+    "package_ndc": "75907-085-28",
+    "package_ndc11": "75907008528",
+    "product_ndc": "75907-085",
+    "application_number": "ANDA091204",
+    "generic_name": "norethindrone and ethinyl estradiol",
+    "brand_name": "Necon"
+  },
+  {
+    "package_ndc": "75907-085-32",
+    "package_ndc11": "75907008532",
+    "product_ndc": "75907-085",
+    "application_number": "ANDA091204",
+    "generic_name": "norethindrone and ethinyl estradiol",
+    "brand_name": "Necon"
+  },
+  {
+    "package_ndc": "75907-130-23",
+    "package_ndc11": "75907013023",
+    "product_ndc": "75907-130",
+    "application_number": "ANDA218129",
+    "generic_name": "PHENYLEPHRINE HYDROCHLORIDE",
+    "brand_name": "PHENYLEPHRINE HYDROCHLORIDE"
+  },
+  {
+    "package_ndc": "75907-190-07",
+    "package_ndc11": "75907019007",
+    "product_ndc": "75907-190",
+    "application_number": "NDA212501",
+    "generic_name": "cyclophosphamide",
+    "brand_name": "CYCLOPHOSPHAMIDE"
+  },
+  {
+    "package_ndc": "75907-207-04",
+    "package_ndc11": "75907020704",
+    "product_ndc": "75907-207",
+    "application_number": "ANDA207676",
+    "generic_name": "Brompheniramine Maleate, Pseudoephedrine Hydrochloride, and Dextromethorphan Hydrobromide",
+    "brand_name": "Brompheniramine Maleate, Pseudoephedrine Hydrochloride, and Dextromethorphan Hydrobromide"
+  },
+  {
+    "package_ndc": "75907-207-16",
+    "package_ndc11": "75907020716",
+    "product_ndc": "75907-207",
+    "application_number": "ANDA207676",
+    "generic_name": "Brompheniramine Maleate, Pseudoephedrine Hydrochloride, and Dextromethorphan Hydrobromide",
+    "brand_name": "Brompheniramine Maleate, Pseudoephedrine Hydrochloride, and Dextromethorphan Hydrobromide"
+  },
+  {
+    "package_ndc": "75907-237-14",
+    "package_ndc11": "75907023714",
+    "product_ndc": "75907-237",
+    "application_number": "ANDA217784",
+    "generic_name": "Omeprazole and Sodium Bicarbonate",
+    "brand_name": "Acid Reducer Powder"
+  },
+  {
+    "package_ndc": "75907-237-42",
+    "package_ndc11": "75907023742",
+    "product_ndc": "75907-237",
+    "application_number": "ANDA217784",
+    "generic_name": "Omeprazole and Sodium Bicarbonate",
+    "brand_name": "Acid Reducer Powder"
+  },
+  {
+    "package_ndc": "75907-303-10",
+    "package_ndc11": "75907030310",
+    "product_ndc": "75907-303",
+    "application_number": "ANDA078697",
+    "generic_name": "Nicotine Polacrilex",
+    "brand_name": "Habitrol Nicotine Polacrilex Gum 4 mg Coated Mint"
+  },
+  {
+    "package_ndc": "75907-303-15",
+    "package_ndc11": "75907030315",
+    "product_ndc": "75907-303",
+    "application_number": "ANDA078697",
+    "generic_name": "Nicotine Polacrilex",
+    "brand_name": "Habitrol Nicotine Polacrilex Gum 4 mg Coated Mint"
+  },
+  {
+    "package_ndc": "75907-303-80",
+    "package_ndc11": "75907030380",
+    "product_ndc": "75907-303",
+    "application_number": "ANDA078697",
+    "generic_name": "Nicotine Polacrilex",
+    "brand_name": "Habitrol Nicotine Polacrilex Gum 4 mg Coated Mint"
+  },
+  {
+    "package_ndc": "75907-324-22",
+    "package_ndc11": "75907032422",
+    "product_ndc": "75907-324",
+    "application_number": "ANDA218129",
+    "generic_name": "PHENYLEPHRINE HYDROCHLORIDE",
+    "brand_name": "PHENYLEPHRINE HYDROCHLORIDE"
+  },
+  {
+    "package_ndc": "75907-347-01",
+    "package_ndc11": "75907034701",
+    "product_ndc": "75907-347",
+    "application_number": "ANDA090617",
+    "generic_name": "Metoprolol succinate",
+    "brand_name": "Metoprolol succinate"
+  },
+  {
+    "package_ndc": "75907-347-10",
+    "package_ndc11": "75907034710",
+    "product_ndc": "75907-347",
+    "application_number": "ANDA090617",
+    "generic_name": "Metoprolol succinate",
+    "brand_name": "Metoprolol succinate"
+  },
+  {
+    "package_ndc": "75936-168-01",
+    "package_ndc11": "75936016801",
+    "product_ndc": "75936-168",
+    "application_number": "M020",
+    "generic_name": "Zinc Oxide",
+    "brand_name": "(Re) Setting 100% mineral Powder Deep Broad Spectrum SPF 35"
+  },
+  {
+    "package_ndc": "75936-168-02",
+    "package_ndc11": "75936016802",
+    "product_ndc": "75936-168",
+    "application_number": "M020",
+    "generic_name": "Zinc Oxide",
+    "brand_name": "(Re) Setting 100% mineral Powder Deep Broad Spectrum SPF 35"
+  },
+  {
+    "package_ndc": "75936-362-01",
+    "package_ndc11": "75936036201",
+    "product_ndc": "75936-362",
+    "application_number": "M020",
+    "generic_name": "Titanium Dioxide, Zinc Oxide",
+    "brand_name": "100% Mineral Broad Spectrum Sunscreen SPF 50"
+  },
+  {
+    "package_ndc": "75936-362-02",
+    "package_ndc11": "75936036202",
+    "product_ndc": "75936-362",
+    "application_number": "M020",
+    "generic_name": "Titanium Dioxide, Zinc Oxide",
+    "brand_name": "100% Mineral Broad Spectrum Sunscreen SPF 50"
+  },
+  {
+    "package_ndc": "75936-601-02",
+    "package_ndc11": "75936060102",
+    "product_ndc": "75936-601",
+    "application_number": "M020",
+    "generic_name": "Broad Spectrum Sunscreen",
+    "brand_name": "Supergoop Glow Screen SPF 40 Shade 2 Golden Hour"
+  },
+  {
+    "package_ndc": "75936-601-03",
+    "package_ndc11": "75936060103",
+    "product_ndc": "75936-601",
+    "application_number": "M020",
+    "generic_name": "Broad Spectrum Sunscreen",
+    "brand_name": "Supergoop Glow Screen SPF 40 Shade 2 Golden Hour"
+  },
+  {
+    "package_ndc": "75936-601-04",
+    "package_ndc11": "75936060104",
+    "product_ndc": "75936-601",
+    "application_number": "M020",
+    "generic_name": "Broad Spectrum Sunscreen",
+    "brand_name": "Supergoop Glow Screen SPF 40 Shade 2 Golden Hour"
+  },
+  {
+    "package_ndc": "75936-601-06",
+    "package_ndc11": "75936060106",
+    "product_ndc": "75936-601",
+    "application_number": "M020",
+    "generic_name": "Broad Spectrum Sunscreen",
+    "brand_name": "Supergoop Glow Screen SPF 40 Shade 2 Golden Hour"
+  },
+  {
+    "package_ndc": "75936-606-02",
+    "package_ndc11": "75936060602",
+    "product_ndc": "75936-606",
+    "application_number": "M020",
+    "generic_name": "Avobenzone, Homosalate, Octisalate, Octocrylene",
+    "brand_name": "Glowscreen SPF 40 - Dawn"
+  },
+  {
+    "package_ndc": "75936-606-03",
+    "package_ndc11": "75936060603",
+    "product_ndc": "75936-606",
+    "application_number": "M020",
+    "generic_name": "Avobenzone, Homosalate, Octisalate, Octocrylene",
+    "brand_name": "Glowscreen SPF 40 - Dawn"
+  },
+  {
+    "package_ndc": "75936-622-02",
+    "package_ndc11": "75936062202",
+    "product_ndc": "75936-622",
+    "application_number": "M020",
+    "generic_name": "Homosalate, Octisalate, Zinc Oxide",
+    "brand_name": "ProtecTINT 10N"
+  },
+  {
+    "package_ndc": "75936-654-01",
+    "package_ndc11": "75936065401",
+    "product_ndc": "75936-654",
+    "application_number": "M020",
+    "generic_name": "Avobenzone, Homosalate, Octisalate, Octocrylene",
+    "brand_name": "Glow Oil SPF 50 Beach Flower"
+  },
+  {
+    "package_ndc": "75936-659-01",
+    "package_ndc11": "75936065901",
+    "product_ndc": "75936-659",
+    "application_number": "M020",
+    "generic_name": "Avobenzone, Homosalate, Octisalate, Octocrylene",
+    "brand_name": "PLAY Antioxidant Body Mist SPF 50 - Vanilla Orchid"
+  },
+  {
+    "package_ndc": "75940-171-04",
+    "package_ndc11": "75940017104",
+    "product_ndc": "75940-171",
+    "application_number": "part358G",
+    "generic_name": "Piperonyl butoxide and Pyrethrum extract",
+    "brand_name": "Herklin"
+  },
+  {
+    "package_ndc": "75981-336-30",
+    "package_ndc11": "75981033630",
+    "product_ndc": "75981-336",
+    "application_number": "M016",
+    "generic_name": "Calamine, Pramoxind HCl",
+    "brand_name": "Calamine"
+  },
+  {
+    "package_ndc": "75990-914-03",
+    "package_ndc11": "75990091403",
+    "product_ndc": "75990-914",
+    "application_number": "M004",
+    "generic_name": "CHLOROXYLENOL",
+    "brand_name": "Satin Foam High Foaming Antiseptic Hand Wash"
+  },
+  {
+    "package_ndc": "75990-968-07",
+    "package_ndc11": "75990096807",
+    "product_ndc": "75990-968",
+    "application_number": "M003",
+    "generic_name": "ALCOHOL",
+    "brand_name": "Recens Foam"
+  },
+  {
+    "package_ndc": "75990-968-12",
+    "package_ndc11": "75990096812",
+    "product_ndc": "75990-968",
+    "application_number": "M003",
+    "generic_name": "ALCOHOL",
+    "brand_name": "Recens Foam"
+  },
+  {
+    "package_ndc": "75990-968-17",
+    "package_ndc11": "75990096817",
+    "product_ndc": "75990-968",
+    "application_number": "M003",
+    "generic_name": "ALCOHOL",
+    "brand_name": "Recens Foam"
+  },
+  {
+    "package_ndc": "76020-200-08",
+    "package_ndc11": "76020020008",
+    "product_ndc": "76020-200",
+    "application_number": "M032",
+    "generic_name": "SALICYLIC ACID",
+    "brand_name": "Home Health Everclean Antidandruff"
+  },
+  {
+    "package_ndc": "0536-1054-29",
+    "package_ndc11": "00536105429",
+    "product_ndc": "0536-1054",
+    "application_number": "M013",
+    "generic_name": "Aspirin",
+    "brand_name": "Aspirin"
+  },
+  {
+    "package_ndc": "76045-009-06",
+    "package_ndc11": "76045000906",
+    "product_ndc": "76045-009",
+    "application_number": "NDA019034",
+    "generic_name": "Hydromorphone hydrochloride",
+    "brand_name": "Dilaudid"
+  },
+  {
+    "package_ndc": "76045-009-11",
+    "package_ndc11": "76045000911",
+    "product_ndc": "76045-009",
+    "application_number": "NDA019034",
+    "generic_name": "Hydromorphone hydrochloride",
+    "brand_name": "Dilaudid"
+  },
+  {
+    "package_ndc": "76045-112-20",
+    "package_ndc11": "76045011220",
+    "product_ndc": "76045-112",
+    "application_number": "ANDA213573",
+    "generic_name": "NALOXONE HYDROCHLORIDE",
+    "brand_name": "Naloxone Hydrochloride"
+  },
+  {
+    "package_ndc": "76045-114-10",
+    "package_ndc11": "76045011410",
+    "product_ndc": "76045-114",
+    "application_number": "ANDA213573",
+    "generic_name": "NALOXONE HYDROCHLORIDE",
+    "brand_name": "Naloxone Hydrochloride"
+  },
+  {
+    "package_ndc": "76045-235-10",
+    "package_ndc11": "76045023510",
+    "product_ndc": "76045-235",
+    "application_number": "ANDA091526",
+    "generic_name": "Diphenhydramine Hydrochloride",
+    "brand_name": "Diphenhydramine Hydrochloride"
+  },
+  {
+    "package_ndc": "76125-257-25",
+    "package_ndc11": "76125025725",
+    "product_ndc": "76125-257",
+    "application_number": "BLA101130",
+    "generic_name": "ANTIHEMOPHILIC FACTOR (HUMAN)",
+    "brand_name": "Koate"
+  },
+  {
+    "package_ndc": "76138-113-03",
+    "package_ndc11": "76138011303",
+    "product_ndc": "76138-113",
+    "application_number": "505G(a)(3)",
+    "generic_name": "Ethyl Alcohol",
+    "brand_name": "ANTISEPTIC HAND SANITIZER"
+  },
+  {
+    "package_ndc": "76138-221-06",
+    "package_ndc11": "76138022106",
+    "product_ndc": "76138-221",
+    "application_number": "M020",
+    "generic_name": "Avobenzone, Homosalate, Octocrylene, Octisalate",
+    "brand_name": "5299 SUNSCREEN"
+  },
+  {
+    "package_ndc": "76147-235-11",
+    "package_ndc11": "76147023511",
+    "product_ndc": "76147-235",
+    "application_number": "M020",
+    "generic_name": "AVOBENZONE, HOMOSALATE, OCTISALATE, OCTOCRYLENE",
+    "brand_name": "StriVectin multi-action Super-C SPF 30"
+  },
+  {
+    "package_ndc": "76147-235-12",
+    "package_ndc11": "76147023512",
+    "product_ndc": "76147-235",
+    "application_number": "M020",
+    "generic_name": "AVOBENZONE, HOMOSALATE, OCTISALATE, OCTOCRYLENE",
+    "brand_name": "StriVectin multi-action Super-C SPF 30"
+  },
+  {
+    "package_ndc": "76151-207-01",
+    "package_ndc11": "76151020701",
+    "product_ndc": "76151-207",
+    "application_number": "M020",
+    "generic_name": "OCTINOXATE, AVOBENZONE",
+    "brand_name": "Restorative Day Moisture SPF 15"
+  },
+  {
+    "package_ndc": "76159-124-01",
+    "package_ndc11": "76159012401",
+    "product_ndc": "76159-124",
+    "application_number": "M020",
+    "generic_name": "OCTINOXATE, OCTISALATE, AVOBENZONE",
+    "brand_name": "3LAB Hydra Day SPF 20 Broad Spectrum Water-Based Sunscreen"
+  },
+  {
+    "package_ndc": "76159-124-02",
+    "package_ndc11": "76159012402",
+    "product_ndc": "76159-124",
+    "application_number": "M020",
+    "generic_name": "OCTINOXATE, OCTISALATE, AVOBENZONE",
+    "brand_name": "3LAB Hydra Day SPF 20 Broad Spectrum Water-Based Sunscreen"
+  },
+  {
+    "package_ndc": "76159-205-00",
+    "package_ndc11": "76159020500",
+    "product_ndc": "76159-205",
+    "application_number": "M020",
+    "generic_name": "Homosalate, Octisalate, Avobenzone, Octocrylene",
+    "brand_name": "3LAB WW DAY SPF40 BROAD SPECTRUM"
+  },
+  {
+    "package_ndc": "76162-001-85",
+    "package_ndc11": "76162000185",
+    "product_ndc": "76162-001",
+    "application_number": "M008",
+    "generic_name": "Bismuth subsalicylate",
+    "brand_name": "Topcare Stomach Relief Original Strength"
+  },
+  {
+    "package_ndc": "76162-005-98",
+    "package_ndc11": "76162000598",
+    "product_ndc": "76162-005",
+    "application_number": "M007",
+    "generic_name": "Sennosides 8.6mg",
+    "brand_name": "Senna Lax"
+  },
+  {
+    "package_ndc": "0536-1112-48",
+    "package_ndc11": "00536111248",
+    "product_ndc": "0536-1112",
+    "application_number": "ANDA078949",
+    "generic_name": "Budesonide",
+    "brand_name": "Budesonide"
+  },
+  {
+    "package_ndc": "76162-026-16",
+    "package_ndc11": "76162002616",
+    "product_ndc": "76162-026",
+    "application_number": "M012",
+    "generic_name": "Nite Time Cold and Flu Relief",
+    "brand_name": "Nite Time Cold and Flu Relief"
+  },
+  {
+    "package_ndc": "76162-030-08",
+    "package_ndc11": "76162003008",
+    "product_ndc": "76162-030",
+    "application_number": "M012",
+    "generic_name": "Vapo Steam",
+    "brand_name": "Vapo Steam"
+  },
+  {
+    "package_ndc": "76162-089-30",
+    "package_ndc11": "76162008930",
+    "product_ndc": "76162-089",
+    "application_number": "M018",
+    "generic_name": "Carboxymethylcellulose sodium",
+    "brand_name": "TopCare Health Lubricant Eye Drops"
+  },
+  {
+    "package_ndc": "76162-134-02",
+    "package_ndc11": "76162013402",
+    "product_ndc": "76162-134",
+    "application_number": "NDA215712",
+    "generic_name": "mometasone furoate monohydrate",
+    "brand_name": "topcare allergy"
+  },
+  {
+    "package_ndc": "76162-134-11",
+    "package_ndc11": "76162013411",
+    "product_ndc": "76162-134",
+    "application_number": "NDA215712",
+    "generic_name": "mometasone furoate monohydrate",
+    "brand_name": "topcare allergy"
+  },
+  {
+    "package_ndc": "76162-202-40",
+    "package_ndc11": "76162020240",
+    "product_ndc": "76162-202",
+    "application_number": "M012",
+    "generic_name": "acetaminophen, dextromethorphan hydrobromide, doxylamine succinate, phenylephrine hydrochloride",
+    "brand_name": "topcare nite time cold and flu"
+  },
+  {
+    "package_ndc": "0536-1147-30",
+    "package_ndc11": "00536114730",
+    "product_ndc": "0536-1147",
+    "application_number": "ANDA206568",
+    "generic_name": "Ibuprofen",
+    "brand_name": "Ibuprofen"
+  },
+  {
+    "package_ndc": "76162-500-40",
+    "package_ndc11": "76162050040",
+    "product_ndc": "76162-500",
+    "application_number": "M012",
+    "generic_name": "acetaminophen, dextromethorphan hydrobromide, guaifenesin, phenylephrine hydrochloride",
+    "brand_name": "topcare day time cold and flu"
+  },
+  {
+    "package_ndc": "76162-576-86",
+    "package_ndc11": "76162057686",
+    "product_ndc": "76162-576",
+    "application_number": "M021",
+    "generic_name": "Sodium fluoride",
+    "brand_name": "Oral Antivavity"
+  },
+  {
+    "package_ndc": "76162-678-24",
+    "package_ndc11": "76162067824",
+    "product_ndc": "76162-678",
+    "application_number": "M012",
+    "generic_name": "Acetaminophen, Dextromethorphan Hydrobromide, Guaifenesin, Doxylamine Succinate, Phenylephrine Hydrochloride",
+    "brand_name": "COMBINATION PACK TopCare health DayTime SEVERE and NiteTime SEVERE Cold and Flu Relief SOFTGELS - 24 ct"
+  },
+  {
+    "package_ndc": "76162-761-25",
+    "package_ndc11": "76162076125",
+    "product_ndc": "76162-761",
+    "application_number": "M007",
+    "generic_name": "DOCUSATE SODIUM",
+    "brand_name": "Topcare Stool Softener"
+  },
+  {
+    "package_ndc": "76162-804-01",
+    "package_ndc11": "76162080401",
+    "product_ndc": "76162-804",
+    "application_number": "ANDA211253",
+    "generic_name": "DICLOFENAC SODIUM",
+    "brand_name": "TOPCARE ARTHRITIS PAIN RELIEVER"
+  },
+  {
+    "package_ndc": "76162-804-02",
+    "package_ndc11": "76162080402",
+    "product_ndc": "76162-804",
+    "application_number": "ANDA211253",
+    "generic_name": "DICLOFENAC SODIUM",
+    "brand_name": "TOPCARE ARTHRITIS PAIN RELIEVER"
+  },
+  {
+    "package_ndc": "76176-023-01",
+    "package_ndc11": "76176002301",
+    "product_ndc": "76176-023",
+    "application_number": "M016",
+    "generic_name": "PETROLATUM",
+    "brand_name": "PERSONAL CARE CREAMY COCOA BUTTER PETROLEUM"
+  },
+  {
+    "package_ndc": "76179-025-02",
+    "package_ndc11": "76179002502",
+    "product_ndc": "76179-025",
+    "application_number": "BLA125384",
+    "generic_name": "Albumin (Human)",
+    "brand_name": "KEDBUMIN"
+  },
+  {
+    "package_ndc": "76179-025-04",
+    "package_ndc11": "76179002504",
+    "product_ndc": "76179-025",
+    "application_number": "BLA125384",
+    "generic_name": "Albumin (Human)",
+    "brand_name": "KEDBUMIN"
+  },
+  {
+    "package_ndc": "0536-1206-10",
+    "package_ndc11": "00536120610",
+    "product_ndc": "0536-1206",
+    "application_number": "M001",
+    "generic_name": "Calcium Carbonate 10gr (648 mg)",
+    "brand_name": "Calcium Carbonate 10 gr (648 mg) (Antacid)"
+  },
+  {
+    "package_ndc": "76204-028-60",
+    "package_ndc11": "76204002860",
+    "product_ndc": "76204-028",
+    "application_number": "ANDA209453",
+    "generic_name": "Cromolyn Sodium Inhalation Solution",
+    "brand_name": "Cromolyn Sodium Inhalation Solution"
+  },
+  {
+    "package_ndc": "76204-030-01",
+    "package_ndc11": "76204003001",
+    "product_ndc": "76204-030",
+    "application_number": "ANDA216486",
+    "generic_name": "formoterol fumarate dihydrate",
+    "brand_name": "Formoterol Fumarate Inhalation Solution"
+  },
+  {
+    "package_ndc": "76204-030-02",
+    "package_ndc11": "76204003002",
+    "product_ndc": "76204-030",
+    "application_number": "ANDA216486",
+    "generic_name": "formoterol fumarate dihydrate",
+    "brand_name": "Formoterol Fumarate Inhalation Solution"
+  },
+  {
+    "package_ndc": "76204-200-01",
+    "package_ndc11": "76204020001",
+    "product_ndc": "76204-200",
+    "application_number": "ANDA077839",
+    "generic_name": "Albuterol Sulfate",
+    "brand_name": "Albuterol Sulfate"
+  },
+  {
+    "package_ndc": "76204-200-25",
+    "package_ndc11": "76204020025",
+    "product_ndc": "76204-200",
+    "application_number": "ANDA077839",
+    "generic_name": "Albuterol Sulfate",
+    "brand_name": "Albuterol Sulfate"
+  },
+  {
+    "package_ndc": "76204-200-30",
+    "package_ndc11": "76204020030",
+    "product_ndc": "76204-200",
+    "application_number": "ANDA077839",
+    "generic_name": "Albuterol Sulfate",
+    "brand_name": "Albuterol Sulfate"
+  },
+  {
+    "package_ndc": "76204-200-60",
+    "package_ndc11": "76204020060",
+    "product_ndc": "76204-200",
+    "application_number": "ANDA077839",
+    "generic_name": "Albuterol Sulfate",
+    "brand_name": "Albuterol Sulfate"
+  },
+  {
+    "package_ndc": "76281-517-25",
+    "package_ndc11": "76281051725",
+    "product_ndc": "76281-517",
+    "application_number": "M012",
+    "generic_name": "Dextromethorphan HBr, GUaifenesin, Phenylephrine HCL",
+    "brand_name": "SEVERE CONGESTION and COUGH MAX"
+  },
+  {
+    "package_ndc": "76281-538-26",
+    "package_ndc11": "76281053826",
+    "product_ndc": "76281-538",
+    "application_number": "M008",
+    "generic_name": "BISMUTH SUBSALICYLATE",
+    "brand_name": "Stomach Relief - Maximum Strength"
+  },
+  {
+    "package_ndc": "76282-115-05",
+    "package_ndc11": "76282011505",
+    "product_ndc": "76282-115",
+    "application_number": "ANDA203259",
+    "generic_name": "Lamivudine and Zidovudine",
+    "brand_name": "Lamivudine and Zidovudine"
+  },
+  {
+    "package_ndc": "76282-115-60",
+    "package_ndc11": "76282011560",
+    "product_ndc": "76282-115",
+    "application_number": "ANDA203259",
+    "generic_name": "Lamivudine and Zidovudine",
+    "brand_name": "Lamivudine and Zidovudine"
+  },
+  {
+    "package_ndc": "76282-154-01",
+    "package_ndc11": "76282015401",
+    "product_ndc": "76282-154",
+    "application_number": "ANDA040907",
+    "generic_name": "Hydrochlorothiazide",
+    "brand_name": "Hydrochlorothiazide"
+  },
+  {
+    "package_ndc": "76282-154-05",
+    "package_ndc11": "76282015405",
+    "product_ndc": "76282-154",
+    "application_number": "ANDA040907",
+    "generic_name": "Hydrochlorothiazide",
+    "brand_name": "Hydrochlorothiazide"
+  },
+  {
+    "package_ndc": "76282-154-10",
+    "package_ndc11": "76282015410",
+    "product_ndc": "76282-154",
+    "application_number": "ANDA040907",
+    "generic_name": "Hydrochlorothiazide",
+    "brand_name": "Hydrochlorothiazide"
+  },
+  {
+    "package_ndc": "76282-154-90",
+    "package_ndc11": "76282015490",
+    "product_ndc": "76282-154",
+    "application_number": "ANDA040907",
+    "generic_name": "Hydrochlorothiazide",
+    "brand_name": "Hydrochlorothiazide"
+  },
+  {
+    "package_ndc": "76282-209-01",
+    "package_ndc11": "76282020901",
+    "product_ndc": "76282-209",
+    "application_number": "ANDA077533",
+    "generic_name": "Terbinafine",
+    "brand_name": "Terbinafine"
+  },
+  {
+    "package_ndc": "76282-209-05",
+    "package_ndc11": "76282020905",
+    "product_ndc": "76282-209",
+    "application_number": "ANDA077533",
+    "generic_name": "Terbinafine",
+    "brand_name": "Terbinafine"
+  },
+  {
+    "package_ndc": "76282-209-30",
+    "package_ndc11": "76282020930",
+    "product_ndc": "76282-209",
+    "application_number": "ANDA077533",
+    "generic_name": "Terbinafine",
+    "brand_name": "Terbinafine"
+  },
+  {
+    "package_ndc": "76282-239-05",
+    "package_ndc11": "76282023905",
+    "product_ndc": "76282-239",
+    "application_number": "ANDA077955",
+    "generic_name": "Amlodipine besylate",
+    "brand_name": "Amlodipine besylate"
+  },
+  {
+    "package_ndc": "76282-239-10",
+    "package_ndc11": "76282023910",
+    "product_ndc": "76282-239",
+    "application_number": "ANDA077955",
+    "generic_name": "Amlodipine besylate",
+    "brand_name": "Amlodipine besylate"
+  },
+  {
+    "package_ndc": "76282-239-90",
+    "package_ndc11": "76282023990",
+    "product_ndc": "76282-239",
+    "application_number": "ANDA077955",
+    "generic_name": "Amlodipine besylate",
+    "brand_name": "Amlodipine besylate"
+  }
+]
