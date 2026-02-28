@@ -1,0 +1,724 @@
+{
+  "info": {
+    "_postman_id": "b2054bbf-c57e-447f-a71a-5f1e2fe83d3f",
+    "name": "Pharmaceutical Economic Data Hub API",
+    "description": "Collection covering all FastAPI endpoints defined in apps/api/app/api/*.py.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Service health check."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Meta",
+      "item": [
+        {
+          "name": "GET /meta/as-of-dates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meta/as-of-dates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "meta",
+                "as-of-dates"
+              ]
+            },
+            "description": "List available as_of_date snapshots by source."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "NDC",
+      "item": [
+        {
+          "name": "GET /ndc/{ndc11}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ndc/{{ndc11}}?as_of_date={{asOfDate}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ndc",
+                "{{ndc11}}"
+              ],
+              "query": [
+                {
+                  "key": "as_of_date",
+                  "value": "{{asOfDate}}",
+                  "description": "Optional filter: YYYY-MM-DD"
+                }
+              ]
+            },
+            "description": "NDC overview including latest NADAC/OpenFDA/crosswalk linkage."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /ndc/{ndc11}/pricing/nadac",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ndc/{{ndc11}}/pricing/nadac?as_of_date={{asOfDate}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ndc",
+                "{{ndc11}}",
+                "pricing",
+                "nadac"
+              ],
+              "query": [
+                {
+                  "key": "as_of_date",
+                  "value": "{{asOfDate}}",
+                  "description": "Optional filter: YYYY-MM-DD"
+                }
+              ]
+            },
+            "description": "NADAC price history for an NDC."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CMS",
+      "item": [
+        {
+          "name": "GET /cms/crosswalk/ndc/{ndc11}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cms/crosswalk/ndc/{{ndc11}}?as_of_date={{asOfDate}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cms",
+                "crosswalk",
+                "ndc",
+                "{{ndc11}}"
+              ],
+              "query": [
+                {
+                  "key": "as_of_date",
+                  "value": "{{asOfDate}}",
+                  "description": "Optional filter: YYYY-MM-DD"
+                }
+              ]
+            },
+            "description": "CMS crosswalk rows matching NDC."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /cms/crosswalk/hcpcs/{hcpcs}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cms/crosswalk/hcpcs/{{hcpcs}}?as_of_date={{asOfDate}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cms",
+                "crosswalk",
+                "hcpcs",
+                "{{hcpcs}}"
+              ],
+              "query": [
+                {
+                  "key": "as_of_date",
+                  "value": "{{asOfDate}}",
+                  "description": "Optional filter: YYYY-MM-DD"
+                }
+              ]
+            },
+            "description": "CMS crosswalk rows matching HCPCS."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /cms/pricing/hcpcs/{hcpcs}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cms/pricing/hcpcs/{{hcpcs}}?as_of_date={{asOfDate}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cms",
+                "pricing",
+                "hcpcs",
+                "{{hcpcs}}"
+              ],
+              "query": [
+                {
+                  "key": "as_of_date",
+                  "value": "{{asOfDate}}",
+                  "description": "Optional filter: YYYY-MM-DD"
+                }
+              ]
+            },
+            "description": "CMS ASP pricing rows matching HCPCS."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /cms/pricing/ndc/{ndc11}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cms/pricing/ndc/{{ndc11}}?as_of_date={{asOfDate}}&hcpcs={{hcpcs}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cms",
+                "pricing",
+                "ndc",
+                "{{ndc11}}"
+              ],
+              "query": [
+                {
+                  "key": "as_of_date",
+                  "value": "{{asOfDate}}",
+                  "description": "Optional filter: YYYY-MM-DD"
+                },
+                {
+                  "key": "hcpcs",
+                  "value": "{{hcpcs}}",
+                  "description": "Optional HCPCS hint",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "CMS pricing resolved from NDC via crosswalk (optionally constrained by HCPCS)."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /cms/pricing (query dispatcher)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cms/pricing?ndc11={{ndc11}}&hcpcs={{hcpcs}}&as_of_date={{asOfDate}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cms",
+                "pricing"
+              ],
+              "query": [
+                {
+                  "key": "ndc11",
+                  "value": "{{ndc11}}",
+                  "description": "Optional when hcpcs is provided"
+                },
+                {
+                  "key": "hcpcs",
+                  "value": "{{hcpcs}}",
+                  "description": "Optional when ndc11 is provided"
+                },
+                {
+                  "key": "as_of_date",
+                  "value": "{{asOfDate}}",
+                  "description": "Optional filter: YYYY-MM-DD"
+                }
+              ]
+            },
+            "description": "Dispatcher endpoint requiring at least one of ndc11 or hcpcs."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Samples",
+      "item": [
+        {
+          "name": "GET /samples/raw/cms-pricing",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/raw/cms-pricing?n={{n}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "raw",
+                "cms-pricing"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Number of random rows to fetch (1-1000)."
+                }
+              ]
+            },
+            "description": "Random sample of raw CMS ASP pricing rows with all stored DB columns."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/raw/nadac",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/raw/nadac?n={{n}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "raw",
+                "nadac"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Number of random rows to fetch (1-1000)."
+                }
+              ]
+            },
+            "description": "Random sample of raw NADAC rows with all stored DB columns."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/raw/openfda",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/raw/openfda?n={{n}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "raw",
+                "openfda"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Number of random rows to fetch (1-1000)."
+                }
+              ]
+            },
+            "description": "Random sample of raw OpenFDA rows with all stored DB columns."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/raw/orange-book",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/raw/orange-book?n={{n}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "raw",
+                "orange-book"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Number of random rows to fetch (1-1000)."
+                }
+              ]
+            },
+            "description": "Random sample of raw Orange Book rows with all stored DB columns."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/raw/purple-book",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/raw/purple-book?n={{n}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "raw",
+                "purple-book"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Number of random rows to fetch (1-1000)."
+                }
+              ]
+            },
+            "description": "Random sample of raw Purple Book rows with all stored DB columns."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/master-dataframe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/master-dataframe?n={{n}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "master-dataframe"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Number of random rows to fetch from the built master dataframe (1-1000)."
+                }
+              ]
+            },
+            "description": "Sample rows from the dataframe generated by build_master_dataframe."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/exact/cms-pricing",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/exact/cms-pricing?n={{n}}&hcpcs={{hcpcs}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "exact",
+                "cms-pricing"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Max rows to return (1-1000)."
+                },
+                {
+                  "key": "hcpcs",
+                  "value": "{{hcpcs}}",
+                  "description": "Example dynamic filter. Replace with any valid raw_cms_asp_pricing column.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Exact-match dynamic filter for raw CMS ASP pricing rows. Any query param (except n) is treated as a column filter."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/exact/nadac",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/exact/nadac?n={{n}}&ndc11={{ndc11}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "exact",
+                "nadac"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Max rows to return (1-1000)."
+                },
+                {
+                  "key": "ndc11",
+                  "value": "{{ndc11}}",
+                  "description": "Example dynamic filter. Replace with any valid raw_nadac column.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Exact-match dynamic filter for raw NADAC rows. Any query param (except n) is treated as a column filter."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/exact/openfda",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/exact/openfda?n={{n}}&package_ndc11={{ndc11}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "exact",
+                "openfda"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Max rows to return (1-1000)."
+                },
+                {
+                  "key": "package_ndc11",
+                  "value": "{{ndc11}}",
+                  "description": "Example dynamic filter. Replace with any valid raw_openfda_ndc column.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Exact-match dynamic filter for raw OpenFDA rows. Any query param (except n) is treated as a column filter."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/exact/orange-book",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/exact/orange-book?n={{n}}&application_number_norm={{applicationNumber}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "exact",
+                "orange-book"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Max rows to return (1-1000)."
+                },
+                {
+                  "key": "application_number_norm",
+                  "value": "{{applicationNumber}}",
+                  "description": "Example dynamic filter. Replace with any valid raw_orange_book_products column.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Exact-match dynamic filter for raw Orange Book rows. Any query param (except n) is treated as a column filter."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/exact/purple-book",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/exact/purple-book?n={{n}}&application_number_norm={{applicationNumber}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "exact",
+                "purple-book"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Max rows to return (1-1000)."
+                },
+                {
+                  "key": "application_number_norm",
+                  "value": "{{applicationNumber}}",
+                  "description": "Example dynamic filter. Replace with any valid raw_purple_book column.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Exact-match dynamic filter for raw Purple Book rows. Any query param (except n) is treated as a column filter."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /samples/exact/master-dataframe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/samples/exact/master-dataframe?n={{n}}&ndc11={{ndc11}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "samples",
+                "exact",
+                "master-dataframe"
+              ],
+              "query": [
+                {
+                  "key": "n",
+                  "value": "{{n}}",
+                  "description": "Max rows to return (1-1000)."
+                },
+                {
+                  "key": "ndc11",
+                  "value": "{{ndc11}}",
+                  "description": "Example dynamic filter. Replace with any valid master dataframe column.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Exact-match dynamic filter for build_master_dataframe output. Any query param (except n) is treated as a column filter."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "FastAPI Docs",
+      "item": [
+        {
+          "name": "GET /openapi.json",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/openapi.json",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "openapi.json"
+              ]
+            },
+            "description": "Auto-generated OpenAPI schema."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /docs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/docs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "docs"
+              ]
+            },
+            "description": "Swagger UI."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /redoc",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/redoc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "redoc"
+              ]
+            },
+            "description": "ReDoc API docs."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "ndc11",
+      "value": "24385005452"
+    },
+    {
+      "key": "hcpcs",
+      "value": "J0750"
+    },
+    {
+      "key": "asOfDate",
+      "value": "2025-12-01"
+    },
+    {
+      "key": "n",
+      "value": "100"
+    },
+    {
+      "key": "applicationNumber",
+      "value": "NDA020718"
+    }
+  ]
+}

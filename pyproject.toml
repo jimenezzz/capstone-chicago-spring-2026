@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pharmaceutical-economic-data-hub"
+version = "0.1.0"
+description = "Monorepo for pharmaceutical economic data ingestion, normalization, and API access"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "alembic>=1.13.2",
+  "fastapi>=0.115.0",
+  "pandas>=2.2.2",
+  "psycopg[binary]>=3.2.1",
+  "pydantic-settings>=2.5.2",
+  "python-dateutil>=2.9.0.post0",
+  "python-multipart>=0.0.9",
+  "requests>=2.32.3",
+  "sqlalchemy>=2.0.36",
+  "typer>=0.12.5",
+  "uvicorn[standard]>=0.30.6"
+]
+
+[project.optional-dependencies]
+dev = [
+  "ruff>=0.6.9"
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["apps*", "pipelines*", "shared*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.format]
+quote-style = "double"
