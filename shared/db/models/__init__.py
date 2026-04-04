@@ -1,3 +1,4 @@
+from shared.db.models.auth import UserAccount, UserRole
 from shared.db.models.core import Applicant, Drug, NdcPackage, NdcProduct, TeCode
 from shared.db.models.ingestion import IngestionRun
 from shared.db.models.pricing import PricingNadac
@@ -24,4 +25,6 @@ __all__ = [
     "Applicant",
     "TeCode",
     "PricingNadac",
+    "UserAccount",
+    "UserRole",
 ]

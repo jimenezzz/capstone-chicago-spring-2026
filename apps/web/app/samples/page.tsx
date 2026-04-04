@@ -74,7 +74,6 @@ export default async function SamplesPage({ searchParams }: { searchParams?: Sea
   return (
     <main>
       <section className="section-card">
-        <h2>Dataset Explorer</h2>
         <SamplesQueryForm
           initialMode={mode}
           initialDataset={dataset}

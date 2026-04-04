@@ -2,10 +2,182 @@
   "info": {
     "_postman_id": "b2054bbf-c57e-447f-a71a-5f1e2fe83d3f",
     "name": "Pharmaceutical Economic Data Hub API",
-    "description": "Collection covering all FastAPI endpoints defined in apps/api/app/api/*.py.",
+    "description": "Collection covering FastAPI endpoints with bearer auth, admin workflows, and automatic token reuse.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /auth/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Log in and store the bearer token for the rest of the collection.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"login returns 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const payload = pm.response.json();",
+                  "pm.collectionVariables.set(\"accessToken\", payload.access_token);",
+                  "pm.collectionVariables.set(\"username\", payload.user.username);",
+                  "pm.collectionVariables.set(\"role\", payload.user.role);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /auth/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Get the current authenticated user."
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /auth/me",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Change the authenticated user username and/or password.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"{{currentPassword}}\",\n  \"username\": \"{{username}}\",\n  \"new_password\": \"{{password}}\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "GET /admin/users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            },
+            "description": "List all users. Admin role required."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /admin/users",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            },
+            "description": "Create a new user. Admin role required.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{newUsername}}\",\n  \"password\": \"{{newPassword}}\",\n  \"role\": \"{{role}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /admin/users/{userId}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{userId}}"
+              ]
+            },
+            "description": "Delete a user. Admin role required."
+          },
+          "response": []
+        }
+      ]
+    },
     {
       "name": "Health",
       "item": [
@@ -23,7 +195,10 @@
                 "health"
               ]
             },
-            "description": "Service health check."
+            "description": "Service health check.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         }
@@ -47,7 +222,10 @@
                 "as-of-dates"
               ]
             },
-            "description": "List available as_of_date snapshots by source."
+            "description": "List available as_of_date snapshots by source.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         }
@@ -78,7 +256,10 @@
                 }
               ]
             },
-            "description": "NDC overview including latest NADAC/OpenFDA/crosswalk linkage."
+            "description": "NDC overview including latest NADAC/OpenFDA/crosswalk linkage.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -106,7 +287,10 @@
                 }
               ]
             },
-            "description": "NADAC price history for an NDC."
+            "description": "NADAC price history for an NDC.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         }
@@ -139,7 +323,10 @@
                 }
               ]
             },
-            "description": "CMS crosswalk rows matching NDC."
+            "description": "CMS crosswalk rows matching NDC.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -167,7 +354,10 @@
                 }
               ]
             },
-            "description": "CMS crosswalk rows matching HCPCS."
+            "description": "CMS crosswalk rows matching HCPCS.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -195,7 +385,10 @@
                 }
               ]
             },
-            "description": "CMS ASP pricing rows matching HCPCS."
+            "description": "CMS ASP pricing rows matching HCPCS.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -229,7 +422,10 @@
                 }
               ]
             },
-            "description": "CMS pricing resolved from NDC via crosswalk (optionally constrained by HCPCS)."
+            "description": "CMS pricing resolved from NDC via crosswalk (optionally constrained by HCPCS).",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -265,7 +461,10 @@
                 }
               ]
             },
-            "description": "Dispatcher endpoint requiring at least one of ndc11 or hcpcs."
+            "description": "Dispatcher endpoint requiring at least one of ndc11 or hcpcs.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         }
@@ -297,7 +496,10 @@
                 }
               ]
             },
-            "description": "Random sample of raw CMS ASP pricing rows with all stored DB columns."
+            "description": "Random sample of raw CMS ASP pricing rows with all stored DB columns.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -324,7 +526,10 @@
                 }
               ]
             },
-            "description": "Random sample of raw NADAC rows with all stored DB columns."
+            "description": "Random sample of raw NADAC rows with all stored DB columns.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -351,7 +556,10 @@
                 }
               ]
             },
-            "description": "Random sample of raw OpenFDA rows with all stored DB columns."
+            "description": "Random sample of raw OpenFDA rows with all stored DB columns.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -378,7 +586,10 @@
                 }
               ]
             },
-            "description": "Random sample of raw Orange Book rows with all stored DB columns."
+            "description": "Random sample of raw Orange Book rows with all stored DB columns.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -405,7 +616,10 @@
                 }
               ]
             },
-            "description": "Random sample of raw Purple Book rows with all stored DB columns."
+            "description": "Random sample of raw Purple Book rows with all stored DB columns.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -431,7 +645,10 @@
                 }
               ]
             },
-            "description": "Sample rows from the dataframe generated by build_master_dataframe."
+            "description": "Sample rows from the dataframe generated by build_master_dataframe.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -464,7 +681,10 @@
                 }
               ]
             },
-            "description": "Exact-match dynamic filter for raw CMS ASP pricing rows. Any query param (except n) is treated as a column filter."
+            "description": "Exact-match dynamic filter for raw CMS ASP pricing rows. Any query param (except n) is treated as a column filter.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -497,7 +717,10 @@
                 }
               ]
             },
-            "description": "Exact-match dynamic filter for raw NADAC rows. Any query param (except n) is treated as a column filter."
+            "description": "Exact-match dynamic filter for raw NADAC rows. Any query param (except n) is treated as a column filter.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -530,7 +753,10 @@
                 }
               ]
             },
-            "description": "Exact-match dynamic filter for raw OpenFDA rows. Any query param (except n) is treated as a column filter."
+            "description": "Exact-match dynamic filter for raw OpenFDA rows. Any query param (except n) is treated as a column filter.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -563,7 +789,10 @@
                 }
               ]
             },
-            "description": "Exact-match dynamic filter for raw Orange Book rows. Any query param (except n) is treated as a column filter."
+            "description": "Exact-match dynamic filter for raw Orange Book rows. Any query param (except n) is treated as a column filter.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -596,7 +825,10 @@
                 }
               ]
             },
-            "description": "Exact-match dynamic filter for raw Purple Book rows. Any query param (except n) is treated as a column filter."
+            "description": "Exact-match dynamic filter for raw Purple Book rows. Any query param (except n) is treated as a column filter.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -629,7 +861,10 @@
                 }
               ]
             },
-            "description": "Exact-match dynamic filter for build_master_dataframe output. Any query param (except n) is treated as a column filter."
+            "description": "Exact-match dynamic filter for build_master_dataframe output. Any query param (except n) is treated as a column filter.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         }
@@ -652,7 +887,10 @@
                 "openapi.json"
               ]
             },
-            "description": "Auto-generated OpenAPI schema."
+            "description": "Auto-generated OpenAPI schema.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -670,7 +908,10 @@
                 "docs"
               ]
             },
-            "description": "Swagger UI."
+            "description": "Swagger UI.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         },
@@ -688,7 +929,10 @@
                 "redoc"
               ]
             },
-            "description": "ReDoc API docs."
+            "description": "ReDoc API docs.",
+            "auth": {
+              "type": "inherit"
+            }
           },
           "response": []
         }
@@ -719,6 +963,48 @@
     {
       "key": "applicationNumber",
       "value": "NDA020718"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "username",
+      "value": "admin"
+    },
+    {
+      "key": "password",
+      "value": "admin"
+    },
+    {
+      "key": "newUsername",
+      "value": "analyst1"
+    },
+    {
+      "key": "newPassword",
+      "value": "analyst1"
+    },
+    {
+      "key": "role",
+      "value": "viewer"
+    },
+    {
+      "key": "userId",
+      "value": "3"
+    },
+    {
+      "key": "currentPassword",
+      "value": "admin"
     }
-  ]
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  }
 }

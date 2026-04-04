@@ -1,3 +1,5 @@
+import { getAuthToken } from "./auth";
+
 export const API_BASE_URL = process.env.INTERNAL_API_BASE_URL ?? "http://api:8000";
 
 type FetchResult<T> = {
@@ -20,13 +22,29 @@ function buildUrl(path: string, query?: Record<string, string | undefined>) {
   return url.toString();
 }
 
+type FetchOptions = {
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  body?: unknown;
+  token?: string | null;
+};
+
 export async function fetchApi<T>(
   path: string,
   query?: Record<string, string | undefined>,
+  options?: FetchOptions,
 ): Promise<FetchResult<T>> {
   const url = buildUrl(path, query);
   try {
-    const response = await fetch(url, { cache: "no-store" });
+    const token = options?.token === null ? null : (options?.token ?? (await getAuthToken()) ?? null);
+    const response = await fetch(url, {
+      method: options?.method ?? "GET",
+      cache: "no-store",
+      headers: {
+        ...(options?.body ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      ...(options?.body ? { body: JSON.stringify(options.body) } : {}),
+    });
     const text = await response.text();
     const payload = text ? JSON.parse(text) : null;
 

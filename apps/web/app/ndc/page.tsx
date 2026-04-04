@@ -24,7 +24,6 @@ export default async function NdcPage({ searchParams }: { searchParams?: SearchP
   return (
     <main>
       <section className="section-card">
-        <h2>NDC Analysis</h2>
         <form className="query-form">
           <label>
             NDC11

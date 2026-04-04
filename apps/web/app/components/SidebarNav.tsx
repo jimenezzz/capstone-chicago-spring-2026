@@ -12,14 +12,15 @@ const links = [
   { href: "/health", label: "System Health" },
 ];
 
-export default function SidebarNav() {
+export default function SidebarNav({ role }: { role: "admin" | "viewer" }) {
   const pathname = usePathname();
+  const navLinks = role === "admin" ? [...links, { href: "/admin", label: "Admin Tools" }] : links;
 
   return (
     <nav>
       <p className="nav-section">Main menu</p>
       <ul className="side-list">
-        {links.map((item) => {
+        {navLinks.map((item) => {
           const active = pathname === item.href;
           return (
             <li key={item.href}>
@@ -34,10 +35,9 @@ export default function SidebarNav() {
       <p className="nav-section">Preferences</p>
       <ul className="side-list">
         <li>
-          <a className="side-link" href="#">Settings</a>
-        </li>
-        <li>
-          <a className="side-link" href="#">Help center</a>
+          <Link className={pathname === "/account" ? "side-link active" : "side-link"} href="/account">
+            Account
+          </Link>
         </li>
       </ul>
     </nav>

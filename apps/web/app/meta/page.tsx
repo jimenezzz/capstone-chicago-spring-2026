@@ -7,7 +7,6 @@ export default async function MetaPage() {
   return (
     <main>
       <section className="section-card">
-        <h2>Data Freshness</h2>
         <p className="muted">Snapshot dates available by source.</p>
       </section>
 

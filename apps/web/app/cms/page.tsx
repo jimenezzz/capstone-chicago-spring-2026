@@ -36,7 +36,6 @@ export default async function CmsPage({ searchParams }: { searchParams?: SearchP
   return (
     <main>
       <section className="section-card">
-        <h2>CMS Analysis</h2>
         <form className="query-form">
           <label>
             Route

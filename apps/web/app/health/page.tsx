@@ -7,7 +7,6 @@ export default async function HealthPage() {
   return (
     <main>
       <section className="section-card">
-        <h2>System Health</h2>
         <p className="muted">Operational check for API availability and response status.</p>
       </section>
 

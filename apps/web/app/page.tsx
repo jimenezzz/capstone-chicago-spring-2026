@@ -1,17 +1,16 @@
-import Link from "next/link";
-
 import { fetchApi } from "../lib/api";
+import { SessionUser } from "../lib/auth";
 
 export default async function DashboardPage() {
-  const [health, asOfDates] = await Promise.all([
+  const [health, asOfDates, me] = await Promise.all([
     fetchApi<{ status: string }>("/health"),
     fetchApi<Array<{ source_name: string; as_of_date: string }>>("/meta/as-of-dates"),
+    fetchApi<SessionUser>("/auth/me"),
   ]);
 
   return (
     <main>
-      <section className="section-card">
-        <h2>Workspace snapshot</h2>
+      <section className="section-stack">
         <div className="grid-4">
           <article className="metric-box">
             <p className="metric-label">API status</p>
@@ -28,49 +27,20 @@ export default async function DashboardPage() {
             <p className="metric-value">3</p>
           </article>
           <article className="metric-box">
-            <p className="metric-label">Roadmap</p>
-            <p className="muted">Models, Admin, Auth (planned)</p>
+            <p className="metric-label">Signed in as</p>
+            <p className="metric-value">{me.data?.username ?? "unknown"}</p>
+            <p className="muted">Role: {me.data?.role ?? "unknown"}</p>
           </article>
         </div>
       </section>
 
-      <section className="section-card">
-        <h3>Analyst flows</h3>
-        <div className="grid-4">
-          <article className="metric-box">
-            <p className="metric-label">NDC Analysis</p>
-            <p>
-              <Link href="/ndc">Open page</Link>
-            </p>
-          </article>
-          <article className="metric-box">
-            <p className="metric-label">CMS Analysis</p>
-            <p>
-              <Link href="/cms">Open page</Link>
-            </p>
-          </article>
-          <article className="metric-box">
-            <p className="metric-label">Dataset Explorer</p>
-            <p>
-              <Link href="/samples">Open page</Link>
-            </p>
-          </article>
-          <article className="metric-box">
-            <p className="metric-label">Data Freshness</p>
-            <p>
-              <Link href="/meta">Open page</Link>
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section className="section-card">
-        <h3>Improvement tips</h3>
+      <section className="section-stack">
+        <h2 className="section-title-soft section-title-compact">Operational notes</h2>
         <div className="kpi-badges">
-          <span className="badge high">Optimize query filters</span>
-          <span className="badge medium">Reduce large pulls</span>
-          <span className="badge medium">Use ranking for outliers</span>
-          <span className="badge low">Export CSV for sharing</span>
+          <span className="badge high">Bearer sessions expire after 60 minutes</span>
+          <span className="badge medium">Viewer role covers all analysis pages</span>
+          <span className="badge medium">Admin role unlocks user management</span>
+          <span className="badge low">Pipeline controls can extend the admin tab</span>
         </div>
       </section>
     </main>
