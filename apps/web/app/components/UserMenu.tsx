@@ -17,6 +17,18 @@ export default function UserMenu() {
     }
   }, [pathname]);
 
+  useEffect(() => {
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      const menu = menuRef.current;
+      if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) {
+        menu.open = false;
+      }
+    };
+
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, []);
+
   const closeMenu = () => {
     if (menuRef.current) {
       menuRef.current.open = false;
@@ -26,10 +38,7 @@ export default function UserMenu() {
   return (
     <details className="user-menu" ref={menuRef}>
       <summary className="user-menu-trigger">
-        <span className="avatar-shell minimal" aria-hidden="true">
-          <span className="avatar-head" />
-          <span className="avatar-body" />
-        </span>
+        <span className="avatar-shell minimal" aria-hidden="true" />
         <span className="user-menu-arrow" aria-hidden="true">
           ▾
         </span>

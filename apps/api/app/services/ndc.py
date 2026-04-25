@@ -2,12 +2,13 @@ import random
 from datetime import date
 from decimal import Decimal
 from functools import lru_cache
-from statistics import median
+from statistics import median, pstdev
 
 from sqlalchemy import Select, cast, desc, func, select
 from sqlalchemy import String as SqlString
 from sqlalchemy.orm import Session
 
+from apps.api.app.services.settings import get_volatility_risk_settings
 from pipelines.ingestion.utils import ndc10_to_ndc11
 from shared.db.models import RawCmsCrosswalk, RawNadac, RawOpenfdaNdc
 
@@ -91,6 +92,10 @@ def get_nadac_pricing_history(session: Session, ndc11: str, as_of_date: date | N
 
 def get_nadac_price_statistics(session: Session, ndc11: str, as_of_date: date | None = None) -> dict:
     normalized = _normalized_ndc11(ndc11)
+    risk_settings = get_volatility_risk_settings(session)
+    volatility_threshold_pct = risk_settings["threshold_pct"]
+    moderate_risk_months = risk_settings["moderate_risk_months"]
+    high_risk_months = risk_settings["high_risk_months"]
     history = get_nadac_pricing_history(session, normalized, as_of_date)
     points = [
         row
@@ -105,7 +110,15 @@ def get_nadac_price_statistics(session: Session, ndc11: str, as_of_date: date | 
     if not prices:
         return {
             "ndc11": normalized,
-            "summary": {"point_count": 0, "raw_record_count": raw_total},
+            "summary": {
+                "point_count": 0,
+                "raw_record_count": raw_total,
+                "volatility_threshold_pct": volatility_threshold_pct,
+                "moderate_risk_months": moderate_risk_months,
+                "high_risk_months": high_risk_months,
+                "volatile_month_count": 0,
+                "stability_label": "Stable",
+            },
             "monthly": [],
         }
 
@@ -140,19 +153,54 @@ def get_nadac_price_statistics(session: Session, ndc11: str, as_of_date: date | 
         previous_average = average
 
     latest = points[-1]
+    first_price = Decimal(points[0]["nadac_price"])
+    latest_price = Decimal(latest["nadac_price"])
+    total_change_pct = (
+        ((latest_price - first_price) / first_price) * Decimal("100")
+        if first_price != 0
+        else None
+    )
+    monthly_change_pcts = [
+        Decimal(row["mom_change_pct"])
+        for row in monthly
+        if row["mom_change_pct"] is not None
+    ]
+    volatile_month_count = sum(
+        1 for change_pct in monthly_change_pcts if abs(change_pct) > volatility_threshold_pct
+    )
+    if volatile_month_count >= high_risk_months:
+        stability_label = "High Risk"
+    elif volatile_month_count >= moderate_risk_months:
+        stability_label = "Moderate Risk"
+    else:
+        stability_label = "Stable"
+
     summary = {
         "min_price": min(prices),
         "max_price": max(prices),
         "average_price": sum(prices) / Decimal(len(prices)),
         "median_price": Decimal(str(median(prices))),
-        "latest_price": Decimal(latest["nadac_price"]),
+        "price_std_dev": (
+            Decimal(str(pstdev([float(price) for price in prices])))
+            if len(prices) > 1
+            else Decimal("0")
+        ),
+        "latest_price": latest_price,
         "latest_effective_date": latest["effective_date"],
         "earliest_effective_date": points[0]["effective_date"],
         "point_count": len(points),
         "raw_record_count": raw_total,
         "price_range": max(prices) - min(prices),
+        "total_change_pct": total_change_pct,
         "latest_mom_change": monthly[-1]["mom_change"] if monthly else None,
         "latest_mom_change_pct": monthly[-1]["mom_change_pct"] if monthly else None,
+        "volatility_threshold_pct": volatility_threshold_pct,
+        "moderate_risk_months": moderate_risk_months,
+        "high_risk_months": high_risk_months,
+        "volatile_month_count": volatile_month_count,
+        "max_positive_spike_pct": max(monthly_change_pcts) if monthly_change_pcts else None,
+        "max_negative_drop_pct": min(monthly_change_pcts) if monthly_change_pcts else None,
+        "stability_label": stability_label,
     }
 
     return {"ndc11": normalized, "summary": summary, "monthly": monthly}
@@ -163,6 +211,28 @@ def _cached_prediction(ndc11: str, months: int, latest_price: str | None) -> tup
     seed = f"{ndc11}:{months}:{latest_price or 'none'}"
     rng = random.Random(seed)
     return tuple(Decimal(str(round(rng.random(), 6))) for _ in range(months))
+
+
+def _prediction_summary(predictions: tuple[Decimal, ...]) -> dict:
+    if not predictions:
+        return {}
+
+    first_price = predictions[0]
+    last_price = predictions[-1]
+    total_change = last_price - first_price
+    total_change_pct = (total_change / first_price) * Decimal("100") if first_price != 0 else None
+
+    return {
+        "min_price": min(predictions),
+        "max_price": max(predictions),
+        "average_price": sum(predictions) / Decimal(len(predictions)),
+        "median_price": Decimal(str(median(predictions))),
+        "price_range": max(predictions) - min(predictions),
+        "first_price": first_price,
+        "last_price": last_price,
+        "total_change": total_change,
+        "total_change_pct": total_change_pct,
+    }
 
 
 def get_ndc_price_prediction(session: Session, ndc11: str, months: int = 12) -> dict:
@@ -188,6 +258,7 @@ def get_ndc_price_prediction(session: Session, ndc11: str, months: int = 12) -> 
     return {
         "ndc11": normalized,
         "months": months,
+        "summary": _prediction_summary(predictions),
         "predictions": [
             {"month": index + 1, "predicted_price": price}
             for index, price in enumerate(predictions)

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Row = Record<string, unknown>;
 
@@ -246,6 +246,19 @@ export default function DataTable({
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const [expandedJsonCells, setExpandedJsonCells] = useState<Record<string, boolean>>({});
   const headerRefs = useRef<Record<string, HTMLTableCellElement | null>>({});
+  const filterMenuRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    const closeFilterMenu = (event: MouseEvent) => {
+      const menu = filterMenuRef.current;
+      if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) {
+        menu.open = false;
+      }
+    };
+
+    document.addEventListener("mousedown", closeFilterMenu);
+    return () => document.removeEventListener("mousedown", closeFilterMenu);
+  }, []);
 
   const processedRows = useMemo(() => {
     let result = [...rows];
@@ -375,7 +388,7 @@ export default function DataTable({
           ({rows.length} total).
         </p>
         <div className="table-controls">
-          <details className="table-filter-menu">
+          <details className="table-filter-menu" ref={filterMenuRef}>
             <summary className="table-icon-button" title="Filter table" aria-label="Filter table">
               <span aria-hidden="true">Filter</span>
               {activeFilterCount > 0 && <strong>{activeFilterCount}</strong>}

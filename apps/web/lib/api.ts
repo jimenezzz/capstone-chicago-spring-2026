@@ -23,7 +23,7 @@ function buildUrl(path: string, query?: Record<string, string | undefined>) {
 }
 
 type FetchOptions = {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   token?: string | null;
 };

@@ -75,10 +75,10 @@ export async function createUserAction(formData: FormData) {
   });
 
   if (!response.ok) {
-    redirect(messageUrl("/admin", "error", response.error ?? "Unable to create user"));
+    redirect(messageUrl("/admin", "user_error", response.error ?? "Unable to create user"));
   }
 
-  redirect(messageUrl("/admin", "success", "User created"));
+  redirect(messageUrl("/admin", "user_success", "User created"));
 }
 
 export async function deleteUserAction(formData: FormData) {
@@ -89,8 +89,47 @@ export async function deleteUserAction(formData: FormData) {
   });
 
   if (!response.ok) {
-    redirect(messageUrl("/admin", "error", response.error ?? "Unable to delete user"));
+    redirect(messageUrl("/admin", "user_error", response.error ?? "Unable to delete user"));
   }
 
-  redirect(messageUrl("/admin", "success", "User deleted"));
+  redirect(messageUrl("/admin", "user_success", "User deleted"));
+}
+
+export async function updateVolatilityThresholdAction(formData: FormData) {
+  const thresholdPct = Number(String(formData.get("threshold_pct") ?? ""));
+  const moderateRiskMonths = Number(String(formData.get("moderate_risk_months") ?? ""));
+  const highRiskMonths = Number(String(formData.get("high_risk_months") ?? ""));
+
+  if (!Number.isFinite(thresholdPct) || thresholdPct < 0) {
+    redirect(messageUrl("/admin", "settings_error", "Enter a valid non-negative threshold"));
+  }
+  if (
+    !Number.isInteger(moderateRiskMonths) ||
+    !Number.isInteger(highRiskMonths) ||
+    moderateRiskMonths < 1 ||
+    highRiskMonths <= moderateRiskMonths
+  ) {
+    redirect(
+      messageUrl("/admin", "settings_error", "High Risk months must be greater than Moderate Risk months"),
+    );
+  }
+
+  const response = await fetchApi<{
+    threshold_pct: string | number;
+    moderate_risk_months: number;
+    high_risk_months: number;
+  }>("/admin/settings/volatility-threshold", undefined, {
+    method: "PUT",
+    body: {
+      threshold_pct: thresholdPct,
+      moderate_risk_months: moderateRiskMonths,
+      high_risk_months: highRiskMonths,
+    },
+  });
+
+  if (!response.ok) {
+    redirect(messageUrl("/admin", "settings_error", response.error ?? "Unable to update threshold"));
+  }
+
+  redirect(messageUrl("/admin", "settings_success", "Volatility risk settings updated"));
 }

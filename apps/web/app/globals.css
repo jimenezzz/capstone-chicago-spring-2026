@@ -44,6 +44,10 @@ body {
   margin-bottom: 1rem;
 }
 
+.nav-toggle {
+  display: none;
+}
+
 .nav-section {
   color: var(--sidebar-muted);
   font-size: 0.72rem;
@@ -86,6 +90,12 @@ body {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: contain;
+}
+
+.side-icon.dashboard-icon {
+  width: 0.92rem;
+  height: 0.92rem;
+  flex-basis: 0.92rem;
 }
 
 .side-link:hover {
@@ -134,12 +144,12 @@ body {
 
 @media (max-width: 720px) {
   .workspace-actions {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
   }
 
   .workspace-page-title {
     font-size: 1.4rem;
+    min-width: 0;
   }
 }
 
@@ -386,9 +396,11 @@ button:hover:not(:disabled) {
 .avatar-shell.minimal {
   width: 42px;
   height: 42px;
-  background: #ffffff;
+  background: #6b7280;
   border: none;
   box-shadow: none;
+  mask: url("/nav-icons/default-user.png") center / 24px 24px no-repeat;
+  -webkit-mask: url("/nav-icons/default-user.png") center / 24px 24px no-repeat;
 }
 
 .avatar-head {
@@ -480,6 +492,24 @@ button:hover:not(:disabled) {
   font-weight: 600;
 }
 
+.admin-setting-card {
+  align-content: start;
+}
+
+.admin-setting-card .muted {
+  margin-bottom: 0.7rem;
+}
+
+.admin-setting-form {
+  width: 100%;
+}
+
+.admin-setting-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
 .login-shell {
   min-height: 100vh;
   display: grid;
@@ -519,7 +549,86 @@ button:hover:not(:disabled) {
   }
 
   .sidebar {
-    padding-bottom: 0;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    padding: 0.78rem 0.85rem;
+  }
+
+  .brand {
+    margin-bottom: 0;
+  }
+
+  .nav-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: end;
+    width: 42px;
+    height: 38px;
+    padding: 0;
+    border-radius: 8px;
+    background: #343740;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-toggle span,
+  .nav-toggle::before,
+  .nav-toggle::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 2px;
+    border-radius: 999px;
+    background: #f9fafb;
+  }
+
+  .nav-toggle span {
+    transform: translateY(0);
+  }
+
+  .nav-toggle::before {
+    transform: translateY(-6px);
+  }
+
+  .nav-toggle::after {
+    transform: translateY(6px);
+  }
+
+  .sidebar-nav {
+    display: none;
+    grid-column: 1 / -1;
+    padding-top: 0.8rem;
+  }
+
+  .sidebar-nav.open {
+    display: block;
+  }
+
+  .workspace-main {
+    padding: 0.65rem 0.85rem 1rem;
+  }
+
+  .workspace-actions {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    min-height: 44px;
+    margin-bottom: 0.65rem;
+  }
+
+  .workspace-page-title {
+    padding-right: 3.5rem;
+  }
+
+  .workspace-actions .user-menu {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 }
 
@@ -886,6 +995,26 @@ button:hover:not(:disabled) {
   gap: 0.75rem;
 }
 
+.drug-identity {
+  display: grid;
+  gap: 0.12rem;
+  border-radius: 8px;
+  padding: 0.85rem;
+  background: #fff;
+}
+
+.drug-identity span {
+  color: #8a93a3;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.drug-identity strong {
+  color: #182033;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
 .stat-card {
   min-height: 116px;
   border-radius: 8px;
@@ -925,6 +1054,81 @@ button:hover:not(:disabled) {
 
 .stat-delta.down {
   color: #ef4444;
+}
+
+.risk-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.2fr);
+  gap: 0.75rem;
+  align-items: stretch;
+  border-radius: 8px;
+  padding: 0.85rem;
+  background: #ffffff;
+  border-left: 5px solid #64748b;
+}
+
+.risk-card.stable {
+  border-left-color: #16a34a;
+}
+
+.risk-card.moderate {
+  border-left-color: #f59e0b;
+}
+
+.risk-card.high {
+  border-left-color: #ef4444;
+}
+
+.risk-card strong {
+  display: block;
+  color: #182033;
+  font-size: 1.65rem;
+  line-height: 1.1;
+}
+
+.risk-card.stable > div:first-child strong {
+  color: #15803d;
+}
+
+.risk-card.moderate > div:first-child strong {
+  color: #b45309;
+}
+
+.risk-card.high > div:first-child strong {
+  color: #b91c1c;
+}
+
+.risk-card p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.risk-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.risk-grid div {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+  padding: 0.65rem;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.risk-grid span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.risk-grid strong {
+  font-size: 1.05rem;
+  word-break: break-word;
 }
 
 .mini-spark {
@@ -967,16 +1171,25 @@ button:hover:not(:disabled) {
   fill: rgba(239, 68, 68, 0.14);
 }
 
-.chart-grid-layout,
-.prediction-grid {
+.chart-grid-layout {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(260px, 0.75fr);
   gap: 0.75rem;
   align-items: stretch;
 }
 
-.prediction-grid {
-  grid-template-columns: minmax(180px, 0.45fr) minmax(0, 1.55fr);
+.prediction-result {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 0.56fr);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.prediction-stat-list {
+  display: grid;
+  gap: 0.58rem;
+  align-content: start;
+  align-self: stretch;
 }
 
 .chart-panel,
@@ -984,6 +1197,10 @@ button:hover:not(:disabled) {
   border-radius: 8px;
   padding: 0.85rem;
   background: #fff;
+}
+
+.prediction-summary {
+  background: #f8fafc;
 }
 
 .chart-panel-wide {
@@ -1103,6 +1320,20 @@ button:hover:not(:disabled) {
   font-weight: 650;
 }
 
+.chart-tooltip-change {
+  fill: #cbd5e1;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.chart-tooltip-change.up {
+  fill: #86efac;
+}
+
+.chart-tooltip-change.down {
+  fill: #fca5a5;
+}
+
 .spread-list {
   display: grid;
   gap: 0.58rem;
@@ -1190,7 +1421,16 @@ button:hover:not(:disabled) {
 
   .metric-strip,
   .chart-grid-layout,
-  .prediction-grid {
+  .risk-card,
+  .prediction-result {
+    grid-template-columns: 1fr;
+  }
+
+  .risk-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-setting-fields {
     grid-template-columns: 1fr;
   }
 

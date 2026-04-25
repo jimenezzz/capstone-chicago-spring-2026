@@ -21,14 +21,23 @@ type StatsSummary = {
   max_price: string | number | null;
   average_price: string | number | null;
   median_price: string | number | null;
+  price_std_dev: string | number | null;
   latest_price: string | number | null;
   latest_effective_date: string | null;
   earliest_effective_date: string | null;
   point_count: number;
   raw_record_count: number;
   price_range: string | number | null;
+  total_change_pct: string | number | null;
   latest_mom_change: string | number | null;
   latest_mom_change_pct: string | number | null;
+  volatility_threshold_pct: string | number;
+  moderate_risk_months: number;
+  high_risk_months: number;
+  volatile_month_count: number;
+  max_positive_spike_pct: string | number | null;
+  max_negative_drop_pct: string | number | null;
+  stability_label: "Stable" | "Moderate Risk" | "High Risk" | string;
 };
 
 export type NadacStats = {
@@ -69,6 +78,12 @@ function trendClass(value: string | number | null | undefined) {
   return parsed > 0 ? "up" : "down";
 }
 
+function riskTone(label: string | null | undefined) {
+  if (label === "High Risk") return "high";
+  if (label === "Moderate Risk") return "moderate";
+  return "stable";
+}
+
 function sparkPath(values: number[], width: number, height: number) {
   if (values.length === 0) return "";
   if (values.length === 1) return `M 0 ${height / 2} L ${width} ${height / 2}`;
@@ -102,11 +117,40 @@ function TinySparkline({ values, tone }: { values: number[]; tone: "up" | "down"
   );
 }
 
+function valuesAroundTarget(values: number[], target: string | number | null | undefined, centerTarget = false) {
+  const parsedTarget = toNumber(target);
+  if (values.length <= 5) return values;
+  if (parsedTarget === null) return values.slice(0, 5);
+
+  let selectedIndex = 0;
+
+  if (centerTarget) {
+    selectedIndex = values.reduce((bestIndex, value, index) => (
+      Math.abs(value - parsedTarget) < Math.abs(values[bestIndex] - parsedTarget) ? index : bestIndex
+    ), 0);
+  } else {
+    selectedIndex = values.findIndex((value, index) => {
+      if (index === 0) return value === parsedTarget;
+      const previous = values[index - 1];
+      return (previous <= parsedTarget && value >= parsedTarget) || (previous >= parsedTarget && value <= parsedTarget);
+    });
+
+    if (selectedIndex === -1) {
+      selectedIndex = values.reduce((bestIndex, value, index) => (
+        Math.abs(value - parsedTarget) < Math.abs(values[bestIndex] - parsedTarget) ? index : bestIndex
+      ), 0);
+    }
+  }
+
+  const start = Math.min(Math.max(0, selectedIndex - 2), Math.max(0, values.length - 5));
+  return values.slice(start, start + 5);
+}
+
 function PriceLineChart({
   points,
   valueLabel,
 }: {
-  points: Array<{ label: string; value: number }>;
+  points: Array<{ label: string; value: number; changePct?: number | null }>;
   valueLabel: string;
 }) {
   const width = 760;
@@ -160,8 +204,8 @@ function PriceLineChart({
         <path className="chart-area" d={area} />
         <path className="chart-line" d={line} />
         {coords.map((point, index) => {
-          const tooltipWidth = 142;
-          const tooltipHeight = 44;
+          const tooltipWidth = 158;
+          const tooltipHeight = 60;
           const tooltipX = Math.min(
             width - tooltipWidth - 8,
             Math.max(8, point.x - tooltipWidth / 2),
@@ -187,6 +231,9 @@ function PriceLineChart({
               <text x={tooltipX + 12} y={tooltipY + 34} className="chart-tooltip-value">
                 {formatCurrency(point.value)}
               </text>
+              <text x={tooltipX + 12} y={tooltipY + 50} className={`chart-tooltip-change ${trendClass(point.changePct)}`}>
+                MoM {formatPercent(point.changePct)}
+              </text>
             </g>
           </g>
           );
@@ -206,30 +253,58 @@ function PriceLineChart({
 export default function NadacPricingDashboard({
   history,
   stats,
+  genericName,
 }: {
   history: NadacHistoryPoint[];
   stats: NadacStats | null;
+  genericName?: string | null;
 }) {
   const historyPoints = history
     .filter((row) => row.effective_date && toNumber(row.nadac_price) !== null)
     .map((row) => ({ label: row.effective_date as string, value: toNumber(row.nadac_price) as number }))
-    .reverse();
+    .reverse()
+    .map((point, index, points) => {
+      const previous = points[index - 1];
+      const changePct = previous && previous.value !== 0 ? ((point.value - previous.value) / previous.value) * 100 : null;
+      return { ...point, changePct };
+    });
   const monthlyValues =
     stats?.monthly
       .map((point) => toNumber(point.average_price))
       .filter((value): value is number => value !== null) ?? [];
   const summary = stats?.summary;
   const latestTone = trendClass(summary?.latest_mom_change_pct);
+  const latestSparkValues = monthlyValues.slice(-5);
+  const averageSparkValues = valuesAroundTarget(monthlyValues, summary?.average_price);
+  const medianSparkValues = valuesAroundTarget(monthlyValues, summary?.median_price, true);
+  const drugTitle = genericName || stats?.ndc11;
+  const drugSubtitle = genericName ? "Generic name" : "NDC";
+  const risk = {
+    label: summary?.stability_label ?? "Stable",
+    tone: riskTone(summary?.stability_label),
+    threshold: formatPercent(summary?.volatility_threshold_pct ?? 5).replace("+", ""),
+    volatileMonths: summary?.volatile_month_count ?? 0,
+    positiveSpike: formatPercent(summary?.max_positive_spike_pct),
+    negativeDrop: formatPercent(summary?.max_negative_drop_pct),
+    standardDeviation: formatCurrency(summary?.price_std_dev),
+  };
 
   const cards = [
-    { label: "Latest", value: formatCurrency(summary?.latest_price), delta: summary?.latest_effective_date ?? "-" },
-    { label: "Average", value: formatCurrency(summary?.average_price), delta: `${formatNumber(summary?.point_count ?? 0)} points` },
-    { label: "Median", value: formatCurrency(summary?.median_price), delta: `${formatNumber(summary?.raw_record_count ?? 0)} raw rows` },
-    { label: "MoM change", value: formatCurrency(summary?.latest_mom_change), delta: formatPercent(summary?.latest_mom_change_pct), tone: latestTone },
+    { label: "Latest", value: formatCurrency(summary?.latest_price), delta: summary?.latest_effective_date ?? "-", sparkValues: latestSparkValues },
+    { label: "Average", value: formatCurrency(summary?.average_price), delta: `${formatNumber(summary?.point_count ?? 0)} points`, sparkValues: averageSparkValues },
+    { label: "Median", value: formatCurrency(summary?.median_price), delta: `${formatNumber(summary?.raw_record_count ?? 0)} raw rows`, sparkValues: medianSparkValues },
+    { label: "MoM change", value: formatCurrency(summary?.latest_mom_change), delta: formatPercent(summary?.latest_mom_change_pct), tone: latestTone, sparkValues: monthlyValues },
   ];
 
   return (
     <section className="analytics-band">
+      {drugTitle && (
+        <div className="drug-identity">
+          <span>{drugSubtitle}</span>
+          <strong>{drugTitle}</strong>
+        </div>
+      )}
+
       <div className="metric-strip">
         {cards.map((card) => (
           <article className="stat-card" key={card.label}>
@@ -238,10 +313,26 @@ export default function NadacPricingDashboard({
               <p className="stat-value">{card.value}</p>
               <p className={`stat-delta ${card.tone ?? "neutral"}`}>{card.delta}</p>
             </div>
-            <TinySparkline values={monthlyValues} tone={(card.tone as "up" | "down" | "neutral") ?? "neutral"} />
+            <TinySparkline values={card.sparkValues} tone={(card.tone as "up" | "down" | "neutral") ?? "neutral"} />
           </article>
         ))}
       </div>
+
+      <article className={`risk-card ${risk.tone}`}>
+        <div>
+          <p className="stat-label">Risk &amp; Stability</p>
+          <strong>{risk.label}</strong>
+          <p>
+            {formatNumber(risk.volatileMonths)} month{risk.volatileMonths === 1 ? "" : "s"} exceeded the{" "}
+            {risk.threshold} volatility threshold.
+          </p>
+        </div>
+        <div className="risk-grid" aria-label="NADAC volatility analytics">
+          <div><span>Max spike</span><strong>{risk.positiveSpike}</strong></div>
+          <div><span>Max drop</span><strong>{risk.negativeDrop}</strong></div>
+          <div><span>Std. dev.</span><strong>{risk.standardDeviation}</strong></div>
+        </div>
+      </article>
 
       <div className="chart-grid-layout">
         <article className="chart-panel chart-panel-wide">
@@ -266,6 +357,7 @@ export default function NadacPricingDashboard({
             <div><span>Minimum</span><strong>{formatCurrency(summary?.min_price)}</strong></div>
             <div><span>Maximum</span><strong>{formatCurrency(summary?.max_price)}</strong></div>
             <div><span>Range</span><strong>{formatCurrency(summary?.price_range)}</strong></div>
+            <div><span>Total change</span><strong>{formatPercent(summary?.total_change_pct)}</strong></div>
           </div>
         </article>
       </div>

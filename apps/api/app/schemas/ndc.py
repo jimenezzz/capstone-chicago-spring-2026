@@ -39,14 +39,23 @@ class NadacStatsSummary(BaseModel):
     max_price: Decimal | None = None
     average_price: Decimal | None = None
     median_price: Decimal | None = None
+    price_std_dev: Decimal | None = None
     latest_price: Decimal | None = None
     latest_effective_date: date | None = None
     earliest_effective_date: date | None = None
     point_count: int = 0
     raw_record_count: int = 0
     price_range: Decimal | None = None
+    total_change_pct: Decimal | None = None
     latest_mom_change: Decimal | None = None
     latest_mom_change_pct: Decimal | None = None
+    volatility_threshold_pct: Decimal = Decimal("5")
+    moderate_risk_months: int = 1
+    high_risk_months: int = 3
+    volatile_month_count: int = 0
+    max_positive_spike_pct: Decimal | None = None
+    max_negative_drop_pct: Decimal | None = None
+    stability_label: str = "Stable"
 
 
 class NadacStatsResponse(BaseModel):
@@ -60,7 +69,20 @@ class NdcPricePredictionPoint(BaseModel):
     predicted_price: Decimal
 
 
+class NdcPricePredictionSummary(BaseModel):
+    min_price: Decimal | None = None
+    max_price: Decimal | None = None
+    average_price: Decimal | None = None
+    median_price: Decimal | None = None
+    price_range: Decimal | None = None
+    first_price: Decimal | None = None
+    last_price: Decimal | None = None
+    total_change: Decimal | None = None
+    total_change_pct: Decimal | None = None
+
+
 class NdcPricePredictionResponse(BaseModel):
     ndc11: str
     months: int
+    summary: NdcPricePredictionSummary
     predictions: list[NdcPricePredictionPoint]

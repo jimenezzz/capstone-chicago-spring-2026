@@ -9,11 +9,30 @@ type PredictionPoint = {
   predicted_price: string | number;
 };
 
+type PredictionSummary = {
+  min_price: string | number | null;
+  max_price: string | number | null;
+  average_price: string | number | null;
+  median_price: string | number | null;
+  price_range: string | number | null;
+  first_price: string | number | null;
+  last_price: string | number | null;
+  total_change: string | number | null;
+  total_change_pct: string | number | null;
+};
+
 type PredictionResponse = {
   ndc11: string;
   months: number;
+  summary: PredictionSummary;
   predictions: PredictionPoint[];
 };
+
+function formatPercent(value: string | number | null | undefined) {
+  const parsed = toNumber(value);
+  if (parsed === null) return "-";
+  return `${parsed >= 0 ? "+" : ""}${parsed.toFixed(2)}%`;
+}
 
 export default function NdcPredictionPanel({ ndc11, months = 12 }: { ndc11: string; months?: number }) {
   const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
@@ -23,8 +42,16 @@ export default function NdcPredictionPanel({ ndc11, months = 12 }: { ndc11: stri
   const chartPoints = useMemo(
     () =>
       prediction?.predictions
-        .map((point) => ({ label: `+${point.month}m`, value: toNumber(point.predicted_price) }))
-        .filter((point): point is { label: string; value: number } => point.value !== null) ?? [],
+        .map((point, index, points) => {
+          const value = toNumber(point.predicted_price);
+          const previousValue = index > 0 ? toNumber(points[index - 1].predicted_price) : null;
+          const changePct = value !== null && previousValue !== null && previousValue !== 0
+            ? ((value - previousValue) / previousValue) * 100
+            : null;
+
+          return { label: `+${point.month}m`, value, changePct };
+        })
+        .filter((point): point is { label: string; value: number; changePct: number | null } => point.value !== null) ?? [],
     [prediction],
   );
 
@@ -55,21 +82,36 @@ export default function NdcPredictionPanel({ ndc11, months = 12 }: { ndc11: stri
           <h3>Price prediction</h3>
           <p>Run a 12-month placeholder model forecast for this NDC.</p>
         </div>
-        <button type="button" className="btn-secondary prediction-button" onClick={runPrediction} disabled={loading || !ndc11}>
-          {loading ? "Calculating..." : "Run prediction"}
-        </button>
+        {!prediction && (
+          <button type="button" className="btn-secondary prediction-button" onClick={runPrediction} disabled={loading || !ndc11}>
+            {loading ? "Calculating..." : "Run prediction"}
+          </button>
+        )}
       </div>
 
       {error && <div className="error-box">{error}</div>}
 
       {prediction ? (
-        <div className="prediction-grid">
-          <div className="prediction-summary">
-            <span>{prediction.months} months</span>
-            <strong>{formatCurrency(prediction.predictions[0]?.predicted_price)}</strong>
-            <small>First forecasted month</small>
-          </div>
+        <div className="prediction-result">
           <PriceLineChart points={chartPoints} valueLabel="NDC price prediction" />
+          <div className="prediction-stat-list">
+            <article className="prediction-summary">
+              <span>Average</span>
+              <strong>{formatCurrency(prediction.summary.average_price)}</strong>
+            </article>
+            <article className="prediction-summary">
+              <span>Median</span>
+              <strong>{formatCurrency(prediction.summary.median_price)}</strong>
+            </article>
+            <article className="prediction-summary">
+              <span>Range</span>
+              <strong>{formatCurrency(prediction.summary.price_range)}</strong>
+            </article>
+            <article className="prediction-summary">
+              <span>Total change</span>
+              <strong>{formatPercent(prediction.summary.total_change_pct)}</strong>
+            </article>
+          </div>
         </div>
       ) : (
         <p className="prediction-empty">The forecast graph will appear here after the model endpoint returns.</p>

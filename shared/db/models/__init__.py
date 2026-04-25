@@ -10,8 +10,10 @@ from shared.db.models.raw import (
     RawOrangeBookProducts,
     RawPurpleBook,
 )
+from shared.db.models.settings import AppSetting
 
 __all__ = [
+    "AppSetting",
     "IngestionRun",
     "RawNadac",
     "RawOrangeBookProducts",

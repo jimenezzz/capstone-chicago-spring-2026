@@ -8,6 +8,11 @@ import { fetchApi } from "../../lib/api";
 
 type SearchParams = { [key: string]: string | string[] | undefined };
 
+type NdcOverview = {
+  brand_name?: string | null;
+  generic_name?: string | null;
+};
+
 function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
@@ -31,7 +36,14 @@ export default async function NdcPage({ searchParams }: { searchParams?: SearchP
           as_of_date: asOfDate,
         })
       : null;
+  const overviewResponse =
+    mode === "nadac" && ndc11
+      ? await fetchApi<NdcOverview>(`/ndc/${encodeURIComponent(ndc11)}`, {
+          as_of_date: asOfDate,
+        })
+      : null;
   const nadacRows = response?.ok && Array.isArray(response.data) ? response.data : [];
+  const hasNadacRows = nadacRows.length > 0;
 
   return (
     <main>
@@ -52,7 +64,7 @@ export default async function NdcPage({ searchParams }: { searchParams?: SearchP
             As-of date
             <input name="as_of_date" type="date" defaultValue={asOfDate} />
           </label>
-          <button type="submit">Run query</button>
+          <button type="submit">Search</button>
         </form>
       </section>
 
@@ -66,16 +78,19 @@ export default async function NdcPage({ searchParams }: { searchParams?: SearchP
 
           {mode === "nadac" && response.ok ? (
             <>
-              <NadacPricingDashboard
-                history={nadacRows as NadacHistoryPoint[]}
-                stats={statsResponse?.ok ? statsResponse.data : null}
-              />
+              {hasNadacRows && (
+                <NadacPricingDashboard
+                  history={nadacRows as NadacHistoryPoint[]}
+                  stats={statsResponse?.ok ? statsResponse.data : null}
+                  genericName={overviewResponse?.ok ? overviewResponse.data?.generic_name : null}
+                />
+              )}
               {statsResponse && !statsResponse.ok && (
                 <section className="section-card">
                   <div className="error-box">{statsResponse.error}</div>
                 </section>
               )}
-              <NdcPredictionPanel ndc11={ndc11} months={12} />
+              {hasNadacRows && <NdcPredictionPanel ndc11={ndc11} months={12} />}
             </>
           ) : null}
 

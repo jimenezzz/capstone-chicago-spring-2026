@@ -350,7 +350,7 @@
                 }
               ]
             },
-            "description": "Run the NDC price prediction endpoint for the requested horizon.",
+            "description": "Run the NDC price prediction endpoint for the requested horizon. Response includes forecast points and summary statistics.",
             "auth": {
               "type": "inherit"
             }

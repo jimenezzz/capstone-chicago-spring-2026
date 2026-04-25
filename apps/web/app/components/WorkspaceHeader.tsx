@@ -11,7 +11,7 @@ function pageTitleFor(pathname: string) {
     case "/ndc":
       return "NDC Analysis";
     case "/cms":
-      return "CMS Analysis";
+      return "CMS Mapping";
     case "/samples":
       return "Dataset Explorer";
     case "/meta":

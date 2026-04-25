@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from apps.api.app.api.auth import get_current_user, require_admin
 from apps.api.app.db.session import get_db
 from apps.api.app.schemas.auth import CreateUserRequest, UserResponse
+from apps.api.app.schemas.settings import UpdateVolatilityThresholdRequest, VolatilityThresholdResponse
+from apps.api.app.services.settings import get_volatility_risk_settings, set_volatility_risk_settings
 from apps.api.app.services.users import create_user, delete_user, list_users, to_user_response
 from shared.db.models import UserAccount
 
@@ -28,3 +30,23 @@ def admin_delete_user(
 ) -> Response:
     delete_user(db, user_id, acting_user=current_user)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/settings/volatility-threshold", response_model=VolatilityThresholdResponse)
+def admin_get_volatility_threshold(db: Session = Depends(get_db)) -> VolatilityThresholdResponse:
+    return VolatilityThresholdResponse(**get_volatility_risk_settings(db))
+
+
+@router.put("/settings/volatility-threshold", response_model=VolatilityThresholdResponse)
+def admin_update_volatility_threshold(
+    payload: UpdateVolatilityThresholdRequest,
+    db: Session = Depends(get_db),
+) -> VolatilityThresholdResponse:
+    return VolatilityThresholdResponse(
+        **set_volatility_risk_settings(
+            db,
+            threshold_pct=payload.threshold_pct,
+            moderate_risk_months=payload.moderate_risk_months,
+            high_risk_months=payload.high_risk_months,
+        )
+    )

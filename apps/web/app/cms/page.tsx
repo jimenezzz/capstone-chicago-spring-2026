@@ -59,7 +59,7 @@ export default async function CmsPage({ searchParams }: { searchParams?: SearchP
             As-of date
             <input name="as_of_date" type="date" defaultValue={asOfDate} />
           </label>
-          <button type="submit">Run query</button>
+          <button type="submit">Search</button>
         </form>
       </section>
 

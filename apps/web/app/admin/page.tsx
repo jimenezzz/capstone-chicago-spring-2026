@@ -1,19 +1,26 @@
 import { redirect } from "next/navigation";
 
-import { createUserAction } from "../actions/auth";
+import { createUserAction, updateVolatilityThresholdAction } from "../actions/auth";
 import DeleteUserForm from "../components/DeleteUserForm";
 import { SessionUser } from "../../lib/auth";
 import { fetchApi } from "../../lib/api";
 
 type SearchParams = { [key: string]: string | string[] | undefined };
+type VolatilityRiskSettings = {
+  threshold_pct: string | number;
+  moderate_risk_months: number;
+  high_risk_months: number;
+};
 
 function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
 export default async function AdminPage({ searchParams }: { searchParams?: SearchParams }) {
-  const error = first(searchParams?.error);
-  const success = first(searchParams?.success);
+  const userError = first(searchParams?.user_error) ?? first(searchParams?.error);
+  const userSuccess = first(searchParams?.user_success) ?? first(searchParams?.success);
+  const settingsError = first(searchParams?.settings_error);
+  const settingsSuccess = first(searchParams?.settings_success);
   const me = await fetchApi<SessionUser>("/auth/me");
 
   if (me.data?.role !== "admin") {
@@ -21,18 +28,19 @@ export default async function AdminPage({ searchParams }: { searchParams?: Searc
   }
 
   const users = await fetchApi<SessionUser[]>("/admin/users");
+  const volatilitySettings = await fetchApi<VolatilityRiskSettings>("/admin/settings/volatility-threshold");
 
   return (
     <main>
       <section className="section-card">
-        <p className="muted">Manage users today. The panel is structured so ingestion controls can be added here later.</p>
+        <p className="muted">Manage user access and configure the analytics defaults used across the hub.</p>
       </section>
 
       <section className="admin-grid">
         <article className="section-card">
           <h3>Create user</h3>
-          {error ? <div className="error-box">{error}</div> : null}
-          {success ? <div className="success-box">{success}</div> : null}
+          {userError ? <div className="error-box">{userError}</div> : null}
+          {userSuccess ? <div className="success-box">{userSuccess}</div> : null}
 
           <form action={createUserAction} className="auth-form">
             <label>
@@ -80,12 +88,55 @@ export default async function AdminPage({ searchParams }: { searchParams?: Searc
         </article>
       </section>
 
-      <section className="section-card" id="future-tools">
-        <h3>Future admin tools</h3>
+      <section className="section-card admin-setting-card">
+        <h3>NADAC volatility threshold</h3>
         <p className="muted">
-          This space is reserved for ingestion pipeline controls so they live beside user administration instead of
-          becoming a separate management surface later.
+          Controls the percent-change cutoff and month counts used for Risk &amp; Stability labels on NDC Analysis.
         </p>
+        {settingsError ? <div className="error-box">{settingsError}</div> : null}
+        {settingsSuccess ? <div className="success-box">{settingsSuccess}</div> : null}
+
+        <form action={updateVolatilityThresholdAction} className="auth-form admin-setting-form">
+          <div className="admin-setting-fields">
+            <label>
+              Threshold percent
+              <input
+                name="threshold_pct"
+                type="number"
+                min="0"
+                max="1000"
+                step="0.1"
+                defaultValue={String(volatilitySettings.data?.threshold_pct ?? 5)}
+                required
+              />
+            </label>
+            <label>
+              Moderate Risk starts at months
+              <input
+                name="moderate_risk_months"
+                type="number"
+                min="1"
+                max="120"
+                step="1"
+                defaultValue={String(volatilitySettings.data?.moderate_risk_months ?? 1)}
+                required
+              />
+            </label>
+            <label>
+              High Risk starts at months
+              <input
+                name="high_risk_months"
+                type="number"
+                min="2"
+                max="120"
+                step="1"
+                defaultValue={String(volatilitySettings.data?.high_risk_months ?? 3)}
+                required
+              />
+            </label>
+          </div>
+          <button type="submit">Update threshold</button>
+        </form>
       </section>
     </main>
   );
