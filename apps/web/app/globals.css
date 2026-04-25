@@ -1365,6 +1365,18 @@ button:hover:not(:disabled) {
   font-size: 1.2rem;
 }
 
+.risk-grid strong.value-up,
+.spread-list strong.up,
+.prediction-summary strong.up {
+  color: #16a34a;
+}
+
+.risk-grid strong.value-down,
+.spread-list strong.down,
+.prediction-summary strong.down {
+  color: #ef4444;
+}
+
 .prediction-button {
   width: auto;
   min-width: 148px;

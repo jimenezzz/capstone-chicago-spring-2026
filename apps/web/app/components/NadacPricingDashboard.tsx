@@ -328,8 +328,8 @@ export default function NadacPricingDashboard({
           </p>
         </div>
         <div className="risk-grid" aria-label="NADAC volatility analytics">
-          <div><span>Max spike</span><strong>{risk.positiveSpike}</strong></div>
-          <div><span>Max drop</span><strong>{risk.negativeDrop}</strong></div>
+          <div><span>Max spike</span><strong className="value-up">{risk.positiveSpike}</strong></div>
+          <div><span>Max drop</span><strong className="value-down">{risk.negativeDrop}</strong></div>
           <div><span>Std. dev.</span><strong>{risk.standardDeviation}</strong></div>
         </div>
       </article>
@@ -357,7 +357,7 @@ export default function NadacPricingDashboard({
             <div><span>Minimum</span><strong>{formatCurrency(summary?.min_price)}</strong></div>
             <div><span>Maximum</span><strong>{formatCurrency(summary?.max_price)}</strong></div>
             <div><span>Range</span><strong>{formatCurrency(summary?.price_range)}</strong></div>
-            <div><span>Total change</span><strong>{formatPercent(summary?.total_change_pct)}</strong></div>
+            <div><span>Total change</span><strong className={trendClass(summary?.total_change_pct)}>{formatPercent(summary?.total_change_pct)}</strong></div>
           </div>
         </article>
       </div>

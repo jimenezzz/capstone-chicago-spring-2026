@@ -34,6 +34,12 @@ function formatPercent(value: string | number | null | undefined) {
   return `${parsed >= 0 ? "+" : ""}${parsed.toFixed(2)}%`;
 }
 
+function trendClass(value: string | number | null | undefined) {
+  const parsed = toNumber(value);
+  if (parsed === null || parsed === 0) return "neutral";
+  return parsed > 0 ? "up" : "down";
+}
+
 export default function NdcPredictionPanel({ ndc11, months = 12 }: { ndc11: string; months?: number }) {
   const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -109,7 +115,7 @@ export default function NdcPredictionPanel({ ndc11, months = 12 }: { ndc11: stri
             </article>
             <article className="prediction-summary">
               <span>Total change</span>
-              <strong>{formatPercent(prediction.summary.total_change_pct)}</strong>
+              <strong className={trendClass(prediction.summary.total_change_pct)}>{formatPercent(prediction.summary.total_change_pct)}</strong>
             </article>
           </div>
         </div>
