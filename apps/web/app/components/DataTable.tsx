@@ -241,9 +241,6 @@ export default function DataTable({
   const [filterValue, setFilterValue] = useState("");
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [rankColumn, setRankColumn] = useState("");
-  const [rankOrder, setRankOrder] = useState<"asc" | "desc">("desc");
-  const [rankLimit, setRankLimit] = useState("25");
   const [pageSize, setPageSize] = useState("25");
   const [page, setPage] = useState(1);
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
@@ -269,14 +266,8 @@ export default function DataTable({
       result.sort((a, b) => compareValues(a[sortColumn], b[sortColumn], sortDirection));
     }
 
-    if (rankColumn) {
-      const ranked = [...result].sort((a, b) => compareValues(a[rankColumn], b[rankColumn], rankOrder));
-      const topN = Math.max(1, Number(rankLimit) || 25);
-      result = ranked.slice(0, topN);
-    }
-
     return result;
-  }, [rows, search, columns, filterColumn, filterValue, sortColumn, sortDirection, rankColumn, rankOrder, rankLimit]);
+  }, [rows, search, columns, filterColumn, filterValue, sortColumn, sortDirection]);
 
   const totalPages = Math.max(1, Math.ceil(processedRows.length / (Math.max(1, Number(pageSize) || 25))));
   const currentPage = Math.min(page, totalPages);
@@ -286,10 +277,6 @@ export default function DataTable({
     const start = (currentPage - 1) * size;
     return processedRows.slice(start, start + size);
   }, [processedRows, currentPage, pageSize]);
-
-  const numericColumns = useMemo(() => {
-    return columns.filter((col) => rows.some((row) => Number.isFinite(Number(toCell(row[col])))));
-  }, [columns, rows]);
 
   const categoricalColorMap = useMemo(() => {
     const map = new Map<string, { bg: string; fg: string }>();
@@ -366,125 +353,75 @@ export default function DataTable({
     setExpandedJsonCells((prev) => ({ ...prev, [cellKey]: !prev[cellKey] }));
   };
 
+  const toggleSort = (column: string) => {
+    setPage(1);
+    if (sortColumn === column) {
+      setSortDirection((direction) => (direction === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setSortColumn(column);
+    setSortDirection("asc");
+  };
+
+  const activeFilterCount = (search.trim() ? 1 : 0) + (filterColumn && filterValue.trim() ? 1 : 0);
+
   return (
     <div className="data-table-wrap">
       {title && <h3>{title}</h3>}
-
-      <div className="table-toolbar">
-        <label>
-          Search all fields
-          <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Find text in results" />
-        </label>
-
-        <label>
-          Filter column
-          <select value={filterColumn} onChange={(e) => { setFilterColumn(e.target.value); setPage(1); }}>
-            <option value="">None</option>
-            {columns.map((col) => (
-              <option value={col} key={col}>{formatColumnLabel(col)}</option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Filter value
-          <input
-            value={filterValue}
-            onChange={(e) => {
-              setFilterValue(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Contains..."
-          />
-        </label>
-
-        <label>
-          Sort by
-          <select value={sortColumn} onChange={(e) => { setSortColumn(e.target.value); setPage(1); }}>
-            <option value="">None</option>
-            {columns.map((col) => (
-              <option value={col} key={col}>{formatColumnLabel(col)}</option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Sort order
-          <select value={sortDirection} onChange={(e) => setSortDirection(e.target.value as "asc" | "desc") }>
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
-        </label>
-
-        <label>
-          Rank by
-          <select value={rankColumn} onChange={(e) => { setRankColumn(e.target.value); setPage(1); }}>
-            <option value="">Off</option>
-            {numericColumns.map((col) => (
-              <option value={col} key={col}>{formatColumnLabel(col)}</option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Rank order
-          <select value={rankOrder} onChange={(e) => { setRankOrder(e.target.value as "asc" | "desc"); setPage(1); }}>
-            <option value="desc">Top values</option>
-            <option value="asc">Bottom values</option>
-          </select>
-        </label>
-
-        <label>
-          Rank limit
-          <input
-            type="number"
-            min={1}
-            value={rankLimit}
-            onChange={(e) => {
-              setRankLimit(e.target.value);
-              setPage(1);
-            }}
-          />
-        </label>
-
-        <label>
-          Rows per page
-          <select value={pageSize} onChange={(e) => { setPageSize(e.target.value); setPage(1); }}>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-        </label>
-
-        <div className="toolbar-action">
-          <span className="toolbar-spacer" aria-hidden="true">Action</span>
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => downloadCsv(fileName, columns, processedRows)}
-          >
-            Export CSV
-          </button>
-        </div>
-      </div>
 
       <div className="table-meta">
         <p>
           Showing <strong>{pagedRows.length}</strong> of <strong>{processedRows.length}</strong> matching rows
           ({rows.length} total).
         </p>
-        <div className="pagination">
-          <button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={currentPage <= 1}>
-            Previous
-          </button>
-          <span>Page {currentPage} of {totalPages}</span>
+        <div className="table-controls">
+          <details className="table-filter-menu">
+            <summary className="table-icon-button" title="Filter table" aria-label="Filter table">
+              <span aria-hidden="true">Filter</span>
+              {activeFilterCount > 0 && <strong>{activeFilterCount}</strong>}
+            </summary>
+            <div className="table-filter-popover">
+              <label>
+                Search all fields
+                <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Find text in results" />
+              </label>
+
+              <label>
+                Filter column
+                <select value={filterColumn} onChange={(e) => { setFilterColumn(e.target.value); setPage(1); }}>
+                  <option value="">None</option>
+                  {columns.map((col) => (
+                    <option value={col} key={col}>{formatColumnLabel(col)}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Filter value
+                <input
+                  value={filterValue}
+                  onChange={(e) => {
+                    setFilterValue(e.target.value);
+                    setPage(1);
+                  }}
+                  placeholder="Contains..."
+                />
+              </label>
+            </div>
+          </details>
+
           <button
             type="button"
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage >= totalPages}
+            className="table-icon-button"
+            onClick={() => downloadCsv(fileName, columns, processedRows)}
+            title="Export CSV"
+            aria-label="Export CSV"
           >
-            Next
+            <svg aria-hidden="true" className="table-download-icon" viewBox="0 0 24 24">
+              <path d="M12 3v11" />
+              <path d="m7 10 5 5 5-5" />
+              <path d="M5 19h14" />
+            </svg>
           </button>
         </div>
       </div>
@@ -508,7 +445,19 @@ export default function DataTable({
                     style={sizeStyle}
                   >
                     <div className="th-content">
-                      <span>{formatColumnLabel(col)}</span>
+                      <button
+                        type="button"
+                        className="th-sort-button"
+                        onClick={() => toggleSort(col)}
+                        title={`Sort by ${formatColumnLabel(col)}`}
+                      >
+                        <span>{formatColumnLabel(col)}</span>
+                        {sortColumn === col && (
+                          <span className="sort-indicator" aria-hidden="true">
+                            {sortDirection === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </button>
                       <span
                         className="col-resize-handle"
                         role="separator"
@@ -597,6 +546,32 @@ export default function DataTable({
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="table-footer">
+        <label className="rows-per-page-control">
+          Rows per page
+          <select value={pageSize} onChange={(e) => { setPageSize(e.target.value); setPage(1); }}>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+
+        <div className="pagination">
+          <button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={currentPage <= 1}>
+            Previous
+          </button>
+          <span>Page {currentPage} of {totalPages}</span>
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage >= totalPages}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

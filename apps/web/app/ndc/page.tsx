@@ -1,4 +1,9 @@
 import DataTable from "../components/DataTable";
+import NadacPricingDashboard, {
+  type NadacHistoryPoint,
+  type NadacStats,
+} from "../components/NadacPricingDashboard";
+import NdcPredictionPanel from "../components/NdcPredictionPanel";
 import { fetchApi } from "../../lib/api";
 
 type SearchParams = { [key: string]: string | string[] | undefined };
@@ -20,10 +25,17 @@ export default async function NdcPage({ searchParams }: { searchParams?: SearchP
         : null;
 
   const response = path ? await fetchApi<unknown>(path, { as_of_date: asOfDate }) : null;
+  const statsResponse =
+    mode === "nadac" && ndc11
+      ? await fetchApi<NadacStats>(`/ndc/${encodeURIComponent(ndc11)}/pricing/nadac/stats`, {
+          as_of_date: asOfDate,
+        })
+      : null;
+  const nadacRows = response?.ok && Array.isArray(response.data) ? response.data : [];
 
   return (
     <main>
-      <section className="section-card">
+      <section className="section-card ndc-query-banner">
         <form className="query-form">
           <label>
             NDC11
@@ -45,14 +57,38 @@ export default async function NdcPage({ searchParams }: { searchParams?: SearchP
       </section>
 
       {response && (
-        <section className="section-card">
-          {!response.ok && <div className="error-box">{response.error}</div>}
-          <DataTable
-            data={response.data ?? []}
-            title={mode === "nadac" ? "NADAC pricing history" : "NDC overview"}
-            fileName={`ndc-${mode}.csv`}
-          />
-        </section>
+        <>
+          {!response.ok && (
+            <section className="section-card">
+              <div className="error-box">{response.error}</div>
+            </section>
+          )}
+
+          {mode === "nadac" && response.ok ? (
+            <>
+              <NadacPricingDashboard
+                history={nadacRows as NadacHistoryPoint[]}
+                stats={statsResponse?.ok ? statsResponse.data : null}
+              />
+              {statsResponse && !statsResponse.ok && (
+                <section className="section-card">
+                  <div className="error-box">{statsResponse.error}</div>
+                </section>
+              )}
+              <NdcPredictionPanel ndc11={ndc11} months={12} />
+            </>
+          ) : null}
+
+          {response.ok && (
+            <section className="section-card">
+              <DataTable
+                data={response.data ?? []}
+                title={mode === "nadac" ? undefined : "NDC overview"}
+                fileName={`ndc-${mode}.csv`}
+              />
+            </section>
+          )}
+        </>
       )}
     </main>
   );

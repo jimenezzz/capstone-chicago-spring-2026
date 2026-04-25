@@ -40,9 +40,9 @@ export default function UserMenu() {
           Account
         </Link>
         <form
-          action={async (formData) => {
+          action={async () => {
             closeMenu();
-            await logoutAction(formData);
+            await logoutAction();
           }}
         >
           <button type="submit" className="user-menu-item danger">

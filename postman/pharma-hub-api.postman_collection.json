@@ -293,6 +293,69 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "GET /ndc/{ndc11}/pricing/nadac/stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ndc/{{ndc11}}/pricing/nadac/stats?as_of_date={{asOfDate}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ndc",
+                "{{ndc11}}",
+                "pricing",
+                "nadac",
+                "stats"
+              ],
+              "query": [
+                {
+                  "key": "as_of_date",
+                  "value": "{{asOfDate}}",
+                  "description": "Optional filter: YYYY-MM-DD"
+                }
+              ]
+            },
+            "description": "Summary and monthly statistics for NADAC price history.",
+            "auth": {
+              "type": "inherit"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /ndc/{ndc11}/pricing/prediction",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ndc/{{ndc11}}/pricing/prediction?months={{predictionMonths}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ndc",
+                "{{ndc11}}",
+                "pricing",
+                "prediction"
+              ],
+              "query": [
+                {
+                  "key": "months",
+                  "value": "{{predictionMonths}}",
+                  "description": "Number of months to predict. Defaults to 12."
+                }
+              ]
+            },
+            "description": "Run the NDC price prediction endpoint for the requested horizon.",
+            "auth": {
+              "type": "inherit"
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -955,6 +1018,10 @@
     {
       "key": "asOfDate",
       "value": "2025-12-01"
+    },
+    {
+      "key": "predictionMonths",
+      "value": "12"
     },
     {
       "key": "n",
