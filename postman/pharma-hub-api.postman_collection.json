@@ -332,7 +332,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/ndc/{{ndc11}}/pricing/prediction?months={{predictionMonths}}",
+              "raw": "{{baseUrl}}/ndc/{{ndc11}}/pricing/prediction?months={{predictionMonths}}&model={{predictionModel}}",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -347,10 +347,15 @@
                   "key": "months",
                   "value": "{{predictionMonths}}",
                   "description": "Number of months to predict. Defaults to 12."
+                },
+                {
+                  "key": "model",
+                  "value": "{{predictionModel}}",
+                  "description": "Prediction model to use: lightgbm or arima. Defaults to lightgbm."
                 }
               ]
             },
-            "description": "Run the NDC price prediction endpoint for the requested horizon. Response includes forecast points and summary statistics.",
+            "description": "Run the NDC price prediction endpoint for the requested horizon and selected model. Response includes the model key, model name, forecast points, and summary statistics.",
             "auth": {
               "type": "inherit"
             }
@@ -1022,6 +1027,10 @@
     {
       "key": "predictionMonths",
       "value": "12"
+    },
+    {
+      "key": "predictionModel",
+      "value": "lightgbm"
     },
     {
       "key": "n",

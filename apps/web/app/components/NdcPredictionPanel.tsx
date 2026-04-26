@@ -1,11 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { PriceLineChart, formatCurrency, toNumber } from "./NadacPricingDashboard";
+import {
+  PriceLineChart,
+  formatCurrency,
+  toNumber,
+  type NadacHistoryPoint,
+} from "./NadacPricingDashboard";
 
 type PredictionPoint = {
   month: number;
+  target_month: string | null;
   predicted_price: string | number;
 };
 
@@ -24,9 +30,18 @@ type PredictionSummary = {
 type PredictionResponse = {
   ndc11: string;
   months: number;
+  model: PredictionModel;
+  model_name: string;
   summary: PredictionSummary;
   predictions: PredictionPoint[];
 };
+
+type PredictionModel = "lightgbm" | "arima";
+
+const MODEL_OPTIONS: Array<{ value: PredictionModel; label: string }> = [
+  { value: "lightgbm", label: "LightGBM" },
+  { value: "arima", label: "ARIMA" },
+];
 
 function formatPercent(value: string | number | null | undefined) {
   const parsed = toNumber(value);
@@ -40,10 +55,35 @@ function trendClass(value: string | number | null | undefined) {
   return parsed > 0 ? "up" : "down";
 }
 
-export default function NdcPredictionPanel({ ndc11, months = 12 }: { ndc11: string; months?: number }) {
-  const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+export default function NdcPredictionPanel({
+  ndc11,
+  months = 12,
+  history = [],
+}: {
+  ndc11: string;
+  months?: number;
+  history?: NadacHistoryPoint[];
+}) {
+  const [predictionsByKey, setPredictionsByKey] = useState<Record<string, PredictionResponse>>({});
+  const [failuresByKey, setFailuresByKey] = useState<Record<string, string>>({});
+  const [selectedModel, setSelectedModel] = useState<PredictionModel>("lightgbm");
+  const [loadingModels, setLoadingModels] = useState<Partial<Record<PredictionModel, boolean>>>({});
+  const [showHistory, setShowHistory] = useState(false);
+  const predictionKey = modelPredictionKey(ndc11, months, selectedModel);
+  const prediction = predictionsByKey[predictionKey] ?? null;
+  const selectedFailure = failuresByKey[predictionKey] ?? null;
+  const isLoadingSelected = Boolean(loadingModels[selectedModel]);
+  const isLoadingAny = MODEL_OPTIONS.some((option) => loadingModels[option.value]);
+
+  const orderedModelOptions = useMemo(() => {
+    return [...MODEL_OPTIONS].sort((first, second) => {
+      const firstKey = modelPredictionKey(ndc11, months, first.value);
+      const secondKey = modelPredictionKey(ndc11, months, second.value);
+      const firstFailed = !predictionsByKey[firstKey] && Boolean(failuresByKey[firstKey]);
+      const secondFailed = !predictionsByKey[secondKey] && Boolean(failuresByKey[secondKey]);
+      return Number(firstFailed) - Number(secondFailed);
+    });
+  }, [failuresByKey, months, ndc11, predictionsByKey]);
 
   const chartPoints = useMemo(
     () =>
@@ -61,11 +101,35 @@ export default function NdcPredictionPanel({ ndc11, months = 12 }: { ndc11: stri
     [prediction],
   );
 
-  async function runPrediction() {
-    setLoading(true);
-    setError(null);
+  const historyChartPoints = useMemo(
+    () =>
+      history
+        .filter((row) => row.effective_date && toNumber(row.nadac_price) !== null)
+        .map((row) => ({ label: row.effective_date as string, value: toNumber(row.nadac_price) as number }))
+        .reverse()
+        .map((point, index, points) => {
+          const previous = points[index - 1];
+          const changePct = previous && previous.value !== 0 ? ((point.value - previous.value) / previous.value) * 100 : null;
+          return { ...point, changePct };
+        }),
+    [history],
+  );
+
+  async function fetchPrediction(model: PredictionModel, force = false) {
+    const key = modelPredictionKey(ndc11, months, model);
+    if (!force && predictionsByKey[key]) {
+      return predictionsByKey[key];
+    }
+
+    setLoadingModels((current) => ({ ...current, [model]: true }));
+    setFailuresByKey((current) => {
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+
     try {
-      const params = new URLSearchParams({ months: String(months) });
+      const params = new URLSearchParams({ months: String(months), model });
       const response = await fetch(`/api/ndc/${encodeURIComponent(ndc11)}/prediction?${params.toString()}`, {
         cache: "no-store",
       });
@@ -73,33 +137,103 @@ export default function NdcPredictionPanel({ ndc11, months = 12 }: { ndc11: stri
       if (!response.ok) {
         throw new Error(payload?.error ?? payload?.detail ?? "Prediction request failed");
       }
-      setPrediction(payload.data as PredictionResponse);
+      const nextPrediction = payload.data as PredictionResponse;
+      if (!nextPrediction.predictions.length) {
+        throw new Error("Prediction returned no forecast points");
+      }
+      setPredictionsByKey((current) => ({
+        ...current,
+        [key]: nextPrediction,
+      }));
+      return nextPrediction;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Prediction request failed");
+      const message = err instanceof Error ? err.message : "Prediction request failed";
+      setFailuresByKey((current) => ({ ...current, [key]: message }));
+      return null;
     } finally {
-      setLoading(false);
+      setLoadingModels((current) => ({ ...current, [model]: false }));
     }
   }
+
+  useEffect(() => {
+    if (!ndc11) return;
+
+    let cancelled = false;
+    Promise.all(MODEL_OPTIONS.map((option) => fetchPrediction(option.value))).then((results) => {
+      if (cancelled) return;
+      const firstSuccessfulModel = results.find((result): result is PredictionResponse => Boolean(result))?.model;
+      if (firstSuccessfulModel && !results.some((result) => result?.model === selectedModel)) {
+        setSelectedModel(firstSuccessfulModel);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [ndc11, months]);
 
   return (
     <section className="prediction-band">
       <div className="prediction-head">
         <div>
           <h3>Price prediction</h3>
-          <p>Run a 12-month placeholder model forecast for this NDC.</p>
+          <p>Run a 12-month forecast for this NDC using the selected model.</p>
         </div>
-        {!prediction && (
-          <button type="button" className="btn-secondary prediction-button" onClick={runPrediction} disabled={loading || !ndc11}>
-            {loading ? "Calculating..." : "Run prediction"}
+        <div className="prediction-actions">
+          <label className="history-toggle">
+            <input
+              type="checkbox"
+              checked={showHistory}
+              onChange={(event) => setShowHistory(event.target.checked)}
+              disabled={historyChartPoints.length === 0}
+            />
+            <span>Show history</span>
+          </label>
+          <div className="prediction-model-field">
+            <label className="model-select-label" htmlFor={`prediction-model-${ndc11}`}>
+              Model
+            </label>
+            <select
+              id={`prediction-model-${ndc11}`}
+              className="model-select"
+              value={selectedModel}
+              onChange={(event) => {
+                setSelectedModel(event.target.value as PredictionModel);
+              }}
+              disabled={isLoadingAny}
+            >
+              {orderedModelOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            type="button"
+            className="btn-secondary prediction-button prediction-icon-button"
+            onClick={() => fetchPrediction(selectedModel, true)}
+            disabled={isLoadingSelected || !ndc11}
+            aria-label="Update prediction"
+            title="Update prediction"
+          >
+            <span aria-hidden="true">↻</span>
           </button>
-        )}
+        </div>
       </div>
 
-      {error && <div className="error-box">{error}</div>}
+      {selectedFailure && !prediction && <div className="error-box">{selectedFailure}</div>}
 
       {prediction ? (
         <div className="prediction-result">
-          <PriceLineChart points={chartPoints} valueLabel="NDC price prediction" />
+          <div>
+            <p className="prediction-model-name">{prediction.model_name}</p>
+            <PriceLineChart
+              points={chartPoints}
+              comparisonPoints={showHistory ? historyChartPoints : []}
+              valueLabel={`${prediction.model_name} NDC price prediction`}
+            />
+          </div>
           <div className="prediction-stat-list">
             <article className="prediction-summary">
               <span>Average</span>
@@ -120,8 +254,14 @@ export default function NdcPredictionPanel({ ndc11, months = 12 }: { ndc11: stri
           </div>
         </div>
       ) : (
-        <p className="prediction-empty">The forecast graph will appear here after the model endpoint returns.</p>
+        <p className="prediction-empty">
+          {isLoadingAny ? "Loading model forecasts..." : "No forecast points are available for this model."}
+        </p>
       )}
     </section>
   );
+}
+
+function modelPredictionKey(ndc11: string, months: number, model: PredictionModel) {
+  return `${ndc11}:${months}:${model}`;
 }

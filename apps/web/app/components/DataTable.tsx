@@ -116,6 +116,10 @@ function isDateColumn(column: string): boolean {
   return DATE_COLUMNS.has(token) || token.includes("date");
 }
 
+function isHistoryLinkColumn(column: string): boolean {
+  return normalizeToken(column) === "history";
+}
+
 function formatDateOnly(value: unknown): string | null {
   const raw = toCell(value).trim();
   if (!raw) return null;
@@ -501,6 +505,7 @@ export default function DataTable({
                   const categorical = isCategoricalColumn(col) && !isEmpty;
                   const jsonToggle = isJsonToggleColumn(col) && !isEmpty;
                   const dateLike = isDateColumn(col) && !isEmpty;
+                  const historyLink = isHistoryLinkColumn(col) && !isEmpty;
                   const colorKey = `${col}::${display}`;
                   const colors = categoricalColorMap.get(colorKey);
                   const json = jsonToggle ? tryFormatJson(row[col]) : null;
@@ -542,9 +547,13 @@ export default function DataTable({
                             className="json-toggle"
                             onClick={() => toggleJsonCell(cellKey)}
                           >
-                            {isExpanded ? "Hide" : "Show"}
-                          </button>
-                        </div>
+                          {isExpanded ? "Hide" : "Show"}
+                        </button>
+                      </div>
+                      ) : historyLink ? (
+                        <a className="btn-link" href={raw}>
+                          View NADAC history
+                        </a>
                       ) : dateDisplay ? (
                         <span className="date-cell" title={raw}>
                           {dateDisplay}

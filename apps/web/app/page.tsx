@@ -1,5 +1,6 @@
 import { fetchApi } from "../lib/api";
 import { SessionUser } from "../lib/auth";
+import { RecentNadacSearchHistory } from "./components/NadacSearchHistory";
 
 export default async function DashboardPage() {
   const [health, asOfDates, me] = await Promise.all([
@@ -43,6 +44,8 @@ export default async function DashboardPage() {
           <span className="badge low">Pipeline controls can extend the admin tab</span>
         </div>
       </section>
+
+      <RecentNadacSearchHistory />
     </main>
   );
 }

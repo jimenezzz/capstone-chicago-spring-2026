@@ -8,7 +8,8 @@ export async function GET(
 ) {
   const { searchParams } = new URL(request.url);
   const months = searchParams.get("months") ?? "12";
-  const result = await fetchApi(`/ndc/${encodeURIComponent(params.ndc11)}/pricing/prediction`, { months });
+  const model = searchParams.get("model") ?? "lightgbm";
+  const result = await fetchApi(`/ndc/${encodeURIComponent(params.ndc11)}/pricing/prediction`, { months, model });
 
   return NextResponse.json(result, { status: result.ok ? 200 : result.status || 500 });
 }

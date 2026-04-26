@@ -33,7 +33,9 @@ export default async function RootLayout({
       <body>
         <div className="workspace-shell">
           <aside className="sidebar">
-            <div className="brand">PharmaHub</div>
+            <div className="brand">
+              Pharma<span>Hub</span>
+            </div>
             <SidebarNav role={session.data.role} />
           </aside>
 

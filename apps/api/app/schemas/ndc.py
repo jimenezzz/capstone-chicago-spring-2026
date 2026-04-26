@@ -15,6 +15,16 @@ class NdcLookupResponse(BaseModel):
     hcpcs_codes: list[str] = Field(default_factory=list)
 
 
+class NdcSearchResult(BaseModel):
+    ndc11: str
+    brand_name: str | None = None
+    generic_name: str | None = None
+    ndc_description: str | None = None
+    latest_nadac_price: Decimal | None = None
+    latest_effective_date: date | None = None
+    as_of_date: date | None = None
+
+
 class NadacHistoryRow(BaseModel):
     as_of_date: date
     effective_date: date | None = None
@@ -66,6 +76,7 @@ class NadacStatsResponse(BaseModel):
 
 class NdcPricePredictionPoint(BaseModel):
     month: int
+    target_month: date | None = None
     predicted_price: Decimal
 
 
@@ -84,5 +95,7 @@ class NdcPricePredictionSummary(BaseModel):
 class NdcPricePredictionResponse(BaseModel):
     ndc11: str
     months: int
+    model: str
+    model_name: str
     summary: NdcPricePredictionSummary
     predictions: list[NdcPricePredictionPoint]

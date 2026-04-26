@@ -13,8 +13,8 @@ export default function DeleteUserForm({ userId, username }: { userId: number; u
       }}
     >
       <input type="hidden" name="user_id" value={userId} />
-      <button type="submit" className="btn-danger">
-        Delete
+      <button type="submit" className="btn-danger admin-delete-button" aria-label={`Delete user ${username}`} title="Delete user">
+        X
       </button>
     </form>
   );

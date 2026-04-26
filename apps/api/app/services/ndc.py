@@ -1,13 +1,12 @@
-import random
 from datetime import date
 from decimal import Decimal
-from functools import lru_cache
 from statistics import median, pstdev
 
 from sqlalchemy import Select, cast, desc, func, select
 from sqlalchemy import String as SqlString
 from sqlalchemy.orm import Session
 
+from apps.api.app.services.prediction_models import MODEL_LABELS, forecast_arima, forecast_lightgbm
 from apps.api.app.services.settings import get_volatility_risk_settings
 from pipelines.ingestion.utils import ndc10_to_ndc11
 from shared.db.models import RawCmsCrosswalk, RawNadac, RawOpenfdaNdc
@@ -58,6 +57,143 @@ def get_ndc_overview(session: Session, ndc11: str, as_of_date: date | None = Non
         "generic_name": openfda.generic_name if openfda else None,
         "hcpcs_codes": sorted(set(hcpcs)),
     }
+
+
+def search_ndcs_by_name(
+    session: Session,
+    name: str,
+    as_of_date: date | None = None,
+    limit: int = 25,
+) -> list[dict]:
+    term = name.strip().lower()
+    if not term:
+        return []
+
+    pattern = f"%{term}%"
+    results: dict[str, dict] = {}
+
+    openfda_stmt: Select = (
+        select(
+            RawOpenfdaNdc.package_ndc11,
+            RawOpenfdaNdc.brand_name,
+            RawOpenfdaNdc.generic_name,
+            RawOpenfdaNdc.as_of_date,
+        )
+        .where(RawOpenfdaNdc.package_ndc11.is_not(None))
+        .where(
+            (
+                RawOpenfdaNdc.brand_name.is_not(None)
+                & func.lower(RawOpenfdaNdc.brand_name).like(pattern)
+            )
+            | (
+                RawOpenfdaNdc.generic_name.is_not(None)
+                & func.lower(RawOpenfdaNdc.generic_name).like(pattern)
+            )
+        )
+        .order_by(desc(RawOpenfdaNdc.as_of_date), RawOpenfdaNdc.brand_name)
+        .limit(limit * 4)
+    )
+    if as_of_date:
+        openfda_stmt = openfda_stmt.where(RawOpenfdaNdc.as_of_date == as_of_date)
+
+    for ndc11, brand_name, generic_name, source_as_of in session.execute(openfda_stmt).all():
+        if not ndc11 or ndc11 in results:
+            continue
+        results[ndc11] = {
+            "ndc11": ndc11,
+            "brand_name": brand_name,
+            "generic_name": generic_name,
+            "ndc_description": None,
+            "latest_nadac_price": None,
+            "latest_effective_date": None,
+            "as_of_date": source_as_of,
+        }
+        if len(results) >= limit:
+            break
+
+    nadac_stmt: Select = (
+        select(
+            RawNadac.ndc11,
+            RawNadac.ndc_description,
+            RawNadac.nadac_price,
+            RawNadac.effective_date,
+            RawNadac.as_of_date,
+        )
+        .where(RawNadac.ndc11.is_not(None))
+        .where(RawNadac.ndc_description.is_not(None))
+        .where(func.lower(RawNadac.ndc_description).like(pattern))
+        .order_by(desc(RawNadac.as_of_date), desc(RawNadac.effective_date))
+        .limit(limit * 4)
+    )
+    if as_of_date:
+        nadac_stmt = nadac_stmt.where(RawNadac.as_of_date == as_of_date)
+
+    for ndc11, description, price, effective_date, source_as_of in session.execute(nadac_stmt).all():
+        if not ndc11:
+            continue
+        if ndc11 in results:
+            results[ndc11]["ndc_description"] = results[ndc11]["ndc_description"] or description
+            results[ndc11]["latest_nadac_price"] = results[ndc11]["latest_nadac_price"] or price
+            results[ndc11]["latest_effective_date"] = (
+                results[ndc11]["latest_effective_date"] or effective_date
+            )
+            continue
+        results[ndc11] = {
+            "ndc11": ndc11,
+            "brand_name": None,
+            "generic_name": None,
+            "ndc_description": description,
+            "latest_nadac_price": price,
+            "latest_effective_date": effective_date,
+            "as_of_date": source_as_of,
+        }
+        if len(results) >= limit:
+            break
+
+    for row in results.values():
+        if not row["brand_name"] or not row["generic_name"]:
+            openfda_detail_stmt: Select = (
+                select(
+                    RawOpenfdaNdc.brand_name,
+                    RawOpenfdaNdc.generic_name,
+                    RawOpenfdaNdc.as_of_date,
+                )
+                .where(RawOpenfdaNdc.package_ndc11 == row["ndc11"])
+                .order_by(desc(RawOpenfdaNdc.as_of_date))
+                .limit(1)
+            )
+            if as_of_date:
+                openfda_detail_stmt = openfda_detail_stmt.where(RawOpenfdaNdc.as_of_date == as_of_date)
+            openfda_detail = session.execute(openfda_detail_stmt).first()
+            if openfda_detail:
+                row["brand_name"] = row["brand_name"] or openfda_detail.brand_name
+                row["generic_name"] = row["generic_name"] or openfda_detail.generic_name
+                row["as_of_date"] = row["as_of_date"] or openfda_detail.as_of_date
+
+        if row["latest_nadac_price"] is None or row["latest_effective_date"] is None:
+            nadac_detail_stmt: Select = (
+                select(
+                    RawNadac.ndc_description,
+                    RawNadac.nadac_price,
+                    RawNadac.effective_date,
+                    RawNadac.as_of_date,
+                )
+                .where(RawNadac.ndc11 == row["ndc11"])
+                .order_by(desc(RawNadac.as_of_date), desc(RawNadac.effective_date))
+                .limit(1)
+            )
+            if as_of_date:
+                nadac_detail_stmt = nadac_detail_stmt.where(RawNadac.as_of_date == as_of_date)
+            nadac_detail = session.execute(nadac_detail_stmt).first()
+            if nadac_detail:
+                row["ndc_description"] = row["ndc_description"] or nadac_detail.ndc_description
+                row["latest_nadac_price"] = row["latest_nadac_price"] or nadac_detail.nadac_price
+                row["latest_effective_date"] = (
+                    row["latest_effective_date"] or nadac_detail.effective_date
+                )
+                row["as_of_date"] = row["as_of_date"] or nadac_detail.as_of_date
+
+    return list(results.values())[:limit]
 
 
 def get_nadac_pricing_history(session: Session, ndc11: str, as_of_date: date | None = None) -> list[dict]:
@@ -206,28 +342,40 @@ def get_nadac_price_statistics(session: Session, ndc11: str, as_of_date: date | 
     return {"ndc11": normalized, "summary": summary, "monthly": monthly}
 
 
-@lru_cache(maxsize=512)
-def _cached_prediction(ndc11: str, months: int, latest_price: str | None) -> tuple[Decimal, ...]:
-    seed = f"{ndc11}:{months}:{latest_price or 'none'}"
-    rng = random.Random(seed)
-    return tuple(Decimal(str(round(rng.random(), 6))) for _ in range(months))
+def _monthly_history_for_prediction(session: Session, ndc11: str) -> list[dict]:
+    history = get_nadac_pricing_history(session, ndc11)
+    monthly_groups: dict[str, list[Decimal]] = {}
+    for row in history:
+        if row["effective_date"] is None or row["nadac_price"] is None:
+            continue
+        month_key = row["effective_date"].strftime("%Y-%m")
+        monthly_groups.setdefault(month_key, []).append(Decimal(row["nadac_price"]))
+
+    return [
+        {
+            "month": f"{month_key}-01",
+            "average_price": sum(prices) / Decimal(len(prices)),
+        }
+        for month_key, prices in sorted(monthly_groups.items())
+    ]
 
 
-def _prediction_summary(predictions: tuple[Decimal, ...]) -> dict:
+def _prediction_summary(predictions: tuple[dict, ...]) -> dict:
     if not predictions:
         return {}
 
-    first_price = predictions[0]
-    last_price = predictions[-1]
+    predicted_prices = [Decimal(row["predicted_price"]) for row in predictions]
+    first_price = predicted_prices[0]
+    last_price = predicted_prices[-1]
     total_change = last_price - first_price
     total_change_pct = (total_change / first_price) * Decimal("100") if first_price != 0 else None
 
     return {
-        "min_price": min(predictions),
-        "max_price": max(predictions),
-        "average_price": sum(predictions) / Decimal(len(predictions)),
-        "median_price": Decimal(str(median(predictions))),
-        "price_range": max(predictions) - min(predictions),
+        "min_price": min(predicted_prices),
+        "max_price": max(predicted_prices),
+        "average_price": sum(predicted_prices) / Decimal(len(predicted_prices)),
+        "median_price": Decimal(str(median(predicted_prices))),
+        "price_range": max(predicted_prices) - min(predicted_prices),
         "first_price": first_price,
         "last_price": last_price,
         "total_change": total_change,
@@ -235,32 +383,27 @@ def _prediction_summary(predictions: tuple[Decimal, ...]) -> dict:
     }
 
 
-def get_ndc_price_prediction(session: Session, ndc11: str, months: int = 12) -> dict:
+def get_ndc_price_prediction(
+    session: Session,
+    ndc11: str,
+    months: int = 12,
+    model: str = "lightgbm",
+) -> dict:
     normalized = _normalized_ndc11(ndc11)
-    latest_stmt = (
-        select(RawNadac)
-        .where(RawNadac.ndc11 == normalized)
-        .order_by(desc(RawNadac.as_of_date), desc(RawNadac.effective_date))
-        .limit(1)
-    )
-    latest = session.scalar(latest_stmt)
+    model_key = model.lower()
+    monthly_history = _monthly_history_for_prediction(session, normalized)
+    if model_key == "lightgbm":
+        predictions = forecast_lightgbm(monthly_history, months)
+    elif model_key == "arima":
+        predictions = forecast_arima(monthly_history, months)
+    else:
+        raise ValueError(f"Unsupported prediction model: {model}")
 
-    # features = {
-    #     "ndc11": normalized,
-    #     "nadac_price": latest.nadac_price if latest else None,
-    #     "effective_date": latest.effective_date if latest else None,
-    #     "ndc_description": latest.ndc_description if latest else None,
-    # }
-    # predictions = model.predict(features, months=months)
-
-    latest_price = str(latest.nadac_price) if latest and latest.nadac_price is not None else None
-    predictions = _cached_prediction(normalized, months, latest_price)
     return {
         "ndc11": normalized,
         "months": months,
+        "model": model_key,
+        "model_name": MODEL_LABELS[model_key],
         "summary": _prediction_summary(predictions),
-        "predictions": [
-            {"month": index + 1, "predicted_price": price}
-            for index, price in enumerate(predictions)
-        ],
+        "predictions": list(predictions),
     }

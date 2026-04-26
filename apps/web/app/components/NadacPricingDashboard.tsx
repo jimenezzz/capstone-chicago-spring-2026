@@ -149,41 +149,62 @@ function valuesAroundTarget(values: number[], target: string | number | null | u
 function PriceLineChart({
   points,
   valueLabel,
+  comparisonPoints = [],
 }: {
   points: Array<{ label: string; value: number; changePct?: number | null }>;
   valueLabel: string;
+  comparisonPoints?: Array<{ label: string; value: number; changePct?: number | null }>;
 }) {
   const width = 760;
   const height = 270;
   const padding = { top: 28, right: 36, bottom: 44, left: 92 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
-  const values = points.map((point) => point.value);
+  const allPoints = [...comparisonPoints, ...points];
+  const values = allPoints.map((point) => point.value);
   const min = values.length ? Math.min(...values) : 0;
   const max = values.length ? Math.max(...values) : 1;
   const span = max - min || 1;
 
-  const coords = points.map((point, index) => ({
+  const toCoords = (series: Array<{ label: string; value: number; changePct?: number | null }>, startIndex = 0) =>
+    series.map((point, index) => ({
     ...point,
-    x: padding.left + (points.length > 1 ? (index / (points.length - 1)) * chartWidth : chartWidth / 2),
+    x: padding.left + (
+      allPoints.length > 1
+        ? ((startIndex + index) / (allPoints.length - 1)) * chartWidth
+        : chartWidth / 2
+    ),
     y: padding.top + chartHeight - ((point.value - min) / span) * chartHeight,
   }));
 
-  const line = coords
+  const coords = toCoords(points, comparisonPoints.length);
+  const comparisonCoords = toCoords(comparisonPoints);
+
+  const lineFromCoords = (seriesCoords: typeof coords) => seriesCoords
     .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`)
     .join(" ");
-  const area = coords.length
-    ? `${line} L ${coords[coords.length - 1].x.toFixed(2)} ${padding.top + chartHeight} L ${coords[0].x.toFixed(2)} ${padding.top + chartHeight} Z`
+
+  const areaFromCoords = (seriesCoords: typeof coords, linePath: string) => seriesCoords.length
+    ? `${linePath} L ${seriesCoords[seriesCoords.length - 1].x.toFixed(2)} ${padding.top + chartHeight} L ${seriesCoords[0].x.toFixed(2)} ${padding.top + chartHeight} Z`
     : "";
+  const predictionDisplayCoords =
+    comparisonCoords.length > 0 && coords.length > 0
+      ? [comparisonCoords[comparisonCoords.length - 1], ...coords]
+      : coords;
+  const line = lineFromCoords(predictionDisplayCoords);
+  const area = areaFromCoords(predictionDisplayCoords, line);
+  const comparisonLine = lineFromCoords(comparisonCoords);
+  const comparisonArea = areaFromCoords(comparisonCoords, comparisonLine);
   const ticks = Array.from({ length: 4 }, (_, index) => min + (span / 3) * index);
-  const labelCount = Math.min(5, coords.length);
+  const axisCoords = [...comparisonCoords, ...coords];
+  const labelCount = Math.min(5, axisCoords.length);
   const xAxisLabelIndexes = new Set(
     Array.from({ length: labelCount }, (_, index) =>
-      labelCount <= 1 ? 0 : Math.round((index * (coords.length - 1)) / (labelCount - 1)),
+      labelCount <= 1 ? 0 : Math.round((index * (axisCoords.length - 1)) / (labelCount - 1)),
     ),
   );
 
-  if (points.length === 0) {
+  if (allPoints.length === 0) {
     return <p className="empty-state">No price points available for charting.</p>;
   }
 
@@ -201,8 +222,20 @@ function PriceLineChart({
             </g>
           );
         })}
+        {comparisonCoords.length > 0 && (
+          <>
+            <path className="chart-area chart-area-muted" d={comparisonArea} />
+            <path className="chart-line chart-line-muted" d={comparisonLine} />
+          </>
+        )}
         <path className="chart-area" d={area} />
         <path className="chart-line" d={line} />
+        {comparisonCoords.map((point, index) => (
+          <g className="chart-point chart-point-muted" key={`history-${point.label}-${index}`} tabIndex={0}>
+            <circle cx={point.x} cy={point.y} r="13" className="chart-hit-area" />
+            <circle cx={point.x} cy={point.y} r="4.5" className="chart-dot chart-dot-muted" />
+          </g>
+        ))}
         {coords.map((point, index) => {
           const tooltipWidth = 158;
           const tooltipHeight = 60;
@@ -238,7 +271,7 @@ function PriceLineChart({
           </g>
           );
         })}
-        {coords
+        {axisCoords
           .filter((_, index) => xAxisLabelIndexes.has(index))
           .map((point) => (
             <text key={point.label} x={point.x} y={height - 14} className="chart-axis" textAnchor="middle">
