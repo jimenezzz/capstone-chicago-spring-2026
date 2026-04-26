@@ -161,6 +161,7 @@ export default async function NdcPage({ searchParams }: { searchParams?: SearchP
                 <NadacPricingDashboard
                   history={nadacRows as NadacHistoryPoint[]}
                   stats={statsResponse?.ok ? statsResponse.data : null}
+                  brandName={overviewResponse?.ok ? overviewResponse.data?.brand_name : null}
                   genericName={overviewResponse?.ok ? overviewResponse.data?.generic_name : null}
                 />
               )}

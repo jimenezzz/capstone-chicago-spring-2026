@@ -286,10 +286,12 @@ function PriceLineChart({
 export default function NadacPricingDashboard({
   history,
   stats,
+  brandName,
   genericName,
 }: {
   history: NadacHistoryPoint[];
   stats: NadacStats | null;
+  brandName?: string | null;
   genericName?: string | null;
 }) {
   const historyPoints = history
@@ -331,6 +333,13 @@ export default function NadacPricingDashboard({
 
   return (
     <section className="analytics-band">
+      {brandName && (
+        <div className="brand-name-banner">
+          <span>Brand name</span>
+          <strong>{brandName}</strong>
+        </div>
+      )}
+
       {drugTitle && (
         <div className="drug-identity">
           <span>{drugSubtitle}</span>

@@ -1049,6 +1049,7 @@ button:hover:not(:disabled) {
   gap: 0.75rem;
 }
 
+.brand-name-banner,
 .drug-identity {
   display: grid;
   gap: 0.12rem;
@@ -1057,12 +1058,14 @@ button:hover:not(:disabled) {
   background: #fff;
 }
 
+.brand-name-banner span,
 .drug-identity span {
   color: #8a93a3;
   font-size: 0.78rem;
   font-weight: 600;
 }
 
+.brand-name-banner strong,
 .drug-identity strong {
   color: #182033;
   font-size: 1.05rem;

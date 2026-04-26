@@ -27,7 +27,7 @@ router = APIRouter(prefix="/ndc", tags=["ndc"])
 def ndc_search(
     name: str = Query(min_length=2, max_length=120),
     as_of_date: date | None = Query(default=None),
-    limit: int = Query(default=25, ge=1, le=50),
+    limit: int = Query(default=100, ge=1, le=250),
     db: Session = Depends(get_db),
 ) -> list[NdcSearchResult]:
     return [

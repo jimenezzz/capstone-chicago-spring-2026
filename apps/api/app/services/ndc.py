@@ -2,7 +2,7 @@ from datetime import date
 from decimal import Decimal
 from statistics import median, pstdev
 
-from sqlalchemy import Select, cast, desc, func, select
+from sqlalchemy import Select, cast, desc, exists, func, select
 from sqlalchemy import String as SqlString
 from sqlalchemy.orm import Session
 
@@ -63,7 +63,7 @@ def search_ndcs_by_name(
     session: Session,
     name: str,
     as_of_date: date | None = None,
-    limit: int = 25,
+    limit: int = 100,
 ) -> list[dict]:
     term = name.strip().lower()
     if not term:
@@ -71,6 +71,9 @@ def search_ndcs_by_name(
 
     pattern = f"%{term}%"
     results: dict[str, dict] = {}
+    nadac_exists = exists().where(RawNadac.ndc11 == RawOpenfdaNdc.package_ndc11)
+    if as_of_date:
+        nadac_exists = nadac_exists.where(RawNadac.as_of_date == as_of_date)
 
     openfda_stmt: Select = (
         select(
@@ -90,7 +93,7 @@ def search_ndcs_by_name(
                 & func.lower(RawOpenfdaNdc.generic_name).like(pattern)
             )
         )
-        .order_by(desc(RawOpenfdaNdc.as_of_date), RawOpenfdaNdc.brand_name)
+        .order_by(desc(nadac_exists), desc(RawOpenfdaNdc.as_of_date), RawOpenfdaNdc.brand_name)
         .limit(limit * 4)
     )
     if as_of_date:
