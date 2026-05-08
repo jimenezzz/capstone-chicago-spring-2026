@@ -1,6 +1,7 @@
 from datetime import date
 from decimal import Decimal
 from statistics import median, pstdev
+from typing import Literal
 
 from sqlalchemy import Select, cast, desc, exists, func, select
 from sqlalchemy import String as SqlString
@@ -62,6 +63,7 @@ def get_ndc_overview(session: Session, ndc11: str, as_of_date: date | None = Non
 def search_ndcs_by_name(
     session: Session,
     name: str,
+    name_field: Literal["generic", "brand", "all"] = "generic",
     as_of_date: date | None = None,
     limit: int = 100,
 ) -> list[dict]:
@@ -75,6 +77,23 @@ def search_ndcs_by_name(
     if as_of_date:
         nadac_exists = nadac_exists.where(RawNadac.as_of_date == as_of_date)
 
+    if name_field == "brand":
+        openfda_name_filter = RawOpenfdaNdc.brand_name.is_not(None) & func.lower(
+            RawOpenfdaNdc.brand_name
+        ).like(pattern)
+    elif name_field == "generic":
+        openfda_name_filter = RawOpenfdaNdc.generic_name.is_not(None) & func.lower(
+            RawOpenfdaNdc.generic_name
+        ).like(pattern)
+    else:
+        openfda_name_filter = (
+            RawOpenfdaNdc.brand_name.is_not(None)
+            & func.lower(RawOpenfdaNdc.brand_name).like(pattern)
+        ) | (
+            RawOpenfdaNdc.generic_name.is_not(None)
+            & func.lower(RawOpenfdaNdc.generic_name).like(pattern)
+        )
+
     openfda_stmt: Select = (
         select(
             RawOpenfdaNdc.package_ndc11,
@@ -83,16 +102,7 @@ def search_ndcs_by_name(
             RawOpenfdaNdc.as_of_date,
         )
         .where(RawOpenfdaNdc.package_ndc11.is_not(None))
-        .where(
-            (
-                RawOpenfdaNdc.brand_name.is_not(None)
-                & func.lower(RawOpenfdaNdc.brand_name).like(pattern)
-            )
-            | (
-                RawOpenfdaNdc.generic_name.is_not(None)
-                & func.lower(RawOpenfdaNdc.generic_name).like(pattern)
-            )
-        )
+        .where(openfda_name_filter)
         .order_by(desc(nadac_exists), desc(RawOpenfdaNdc.as_of_date), RawOpenfdaNdc.brand_name)
         .limit(limit * 4)
     )
@@ -114,44 +124,47 @@ def search_ndcs_by_name(
         if len(results) >= limit:
             break
 
-    nadac_stmt: Select = (
-        select(
-            RawNadac.ndc11,
-            RawNadac.ndc_description,
-            RawNadac.nadac_price,
-            RawNadac.effective_date,
-            RawNadac.as_of_date,
-        )
-        .where(RawNadac.ndc11.is_not(None))
-        .where(RawNadac.ndc_description.is_not(None))
-        .where(func.lower(RawNadac.ndc_description).like(pattern))
-        .order_by(desc(RawNadac.as_of_date), desc(RawNadac.effective_date))
-        .limit(limit * 4)
-    )
-    if as_of_date:
-        nadac_stmt = nadac_stmt.where(RawNadac.as_of_date == as_of_date)
-
-    for ndc11, description, price, effective_date, source_as_of in session.execute(nadac_stmt).all():
-        if not ndc11:
-            continue
-        if ndc11 in results:
-            results[ndc11]["ndc_description"] = results[ndc11]["ndc_description"] or description
-            results[ndc11]["latest_nadac_price"] = results[ndc11]["latest_nadac_price"] or price
-            results[ndc11]["latest_effective_date"] = (
-                results[ndc11]["latest_effective_date"] or effective_date
+    if name_field == "all":
+        nadac_stmt: Select = (
+            select(
+                RawNadac.ndc11,
+                RawNadac.ndc_description,
+                RawNadac.nadac_price,
+                RawNadac.effective_date,
+                RawNadac.as_of_date,
             )
-            continue
-        results[ndc11] = {
-            "ndc11": ndc11,
-            "brand_name": None,
-            "generic_name": None,
-            "ndc_description": description,
-            "latest_nadac_price": price,
-            "latest_effective_date": effective_date,
-            "as_of_date": source_as_of,
-        }
-        if len(results) >= limit:
-            break
+            .where(RawNadac.ndc11.is_not(None))
+            .where(RawNadac.ndc_description.is_not(None))
+            .where(func.lower(RawNadac.ndc_description).like(pattern))
+            .order_by(desc(RawNadac.as_of_date), desc(RawNadac.effective_date))
+            .limit(limit * 4)
+        )
+        if as_of_date:
+            nadac_stmt = nadac_stmt.where(RawNadac.as_of_date == as_of_date)
+
+        for ndc11, description, price, effective_date, source_as_of in session.execute(
+            nadac_stmt
+        ).all():
+            if not ndc11:
+                continue
+            if ndc11 in results:
+                results[ndc11]["ndc_description"] = results[ndc11]["ndc_description"] or description
+                results[ndc11]["latest_nadac_price"] = results[ndc11]["latest_nadac_price"] or price
+                results[ndc11]["latest_effective_date"] = (
+                    results[ndc11]["latest_effective_date"] or effective_date
+                )
+                continue
+            results[ndc11] = {
+                "ndc11": ndc11,
+                "brand_name": None,
+                "generic_name": None,
+                "ndc_description": description,
+                "latest_nadac_price": price,
+                "latest_effective_date": effective_date,
+                "as_of_date": source_as_of,
+            }
+            if len(results) >= limit:
+                break
 
     for row in results.values():
         if not row["brand_name"] or not row["generic_name"]:

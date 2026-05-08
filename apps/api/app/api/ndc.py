@@ -26,13 +26,20 @@ router = APIRouter(prefix="/ndc", tags=["ndc"])
 @router.get("/search", response_model=list[NdcSearchResult])
 def ndc_search(
     name: str = Query(min_length=2, max_length=120),
+    name_field: Literal["generic", "brand", "all"] = Query(default="generic"),
     as_of_date: date | None = Query(default=None),
     limit: int = Query(default=100, ge=1, le=250),
     db: Session = Depends(get_db),
 ) -> list[NdcSearchResult]:
     return [
         NdcSearchResult(**row)
-        for row in search_ndcs_by_name(db, name, as_of_date=as_of_date, limit=limit)
+        for row in search_ndcs_by_name(
+            db,
+            name,
+            name_field=name_field,
+            as_of_date=as_of_date,
+            limit=limit,
+        )
     ]
 
 

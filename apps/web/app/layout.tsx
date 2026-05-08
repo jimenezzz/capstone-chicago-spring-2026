@@ -1,5 +1,6 @@
 import "./globals.css";
 import { headers } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import SidebarNav from "./components/SidebarNav";
@@ -33,9 +34,9 @@ export default async function RootLayout({
       <body>
         <div className="workspace-shell">
           <aside className="sidebar">
-            <div className="brand">
+            <Link className="brand" href="/">
               Pharma<span>Hub</span>
-            </div>
+            </Link>
             <SidebarNav role={session.data.role} />
           </aside>
 

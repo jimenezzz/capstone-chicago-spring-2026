@@ -24,8 +24,16 @@ type NdcSearchResult = {
   as_of_date?: string | null;
 };
 
+const nameFieldOptions = ["generic", "brand", "all"] as const;
+type NameField = (typeof nameFieldOptions)[number];
+
 function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function nameFieldFrom(value: string | string[] | undefined): NameField {
+  const field = first(value);
+  return nameFieldOptions.includes(field as NameField) ? (field as NameField) : "generic";
 }
 
 function nadacHistoryHref(ndc11: string, asOfDate: string) {
@@ -39,6 +47,7 @@ function nadacHistoryHref(ndc11: string, asOfDate: string) {
 export default async function NdcPage({ searchParams }: { searchParams?: SearchParams }) {
   const ndc11 = first(searchParams?.ndc11) ?? "";
   const drugName = first(searchParams?.drug_name) ?? "";
+  const nameField = nameFieldFrom(searchParams?.name_field);
   const asOfDate = first(searchParams?.as_of_date) ?? "";
   const mode = first(searchParams?.mode) ?? "nadac";
 
@@ -54,6 +63,7 @@ export default async function NdcPage({ searchParams }: { searchParams?: SearchP
     drugName.trim().length >= 2
       ? await fetchApi<NdcSearchResult[]>("/ndc/search", {
           name: drugName,
+          name_field: nameField,
           as_of_date: asOfDate,
         })
       : null;
@@ -99,6 +109,14 @@ export default async function NdcPage({ searchParams }: { searchParams?: SearchP
             <label>
               Drug name
               <input name="drug_name" defaultValue={drugName} placeholder="atorvastatin" minLength={2} />
+            </label>
+            <label>
+              Filter by
+              <select name="name_field" defaultValue={nameField}>
+                <option value="generic">Generic name</option>
+                <option value="brand">Brand name</option>
+                <option value="all">All name fields</option>
+              </select>
             </label>
             <label>
               As-of date
